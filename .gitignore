@@ -1,0 +1,23 @@
+# Archivos específicos de Visual Studio Code
+.vscode/
+*.code-workspace
+.history/
+
+# Archivos compilados de Java (Bytecode)
+*.class
+*.log
+
+# Carpetas de compilación y salida de datos
+bin/
+out/
+target/
+dist/
+build/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos temporales de edición
+*.bak
+*.swp
