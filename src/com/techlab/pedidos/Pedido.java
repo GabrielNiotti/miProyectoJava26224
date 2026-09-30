@@ -33,6 +33,9 @@ public class Pedido {
     // Agrega un producto al pedido y actualiza el costo total acumulado
     
     public void agregarItem(Producto producto, int cantidad) throws StockInsuficienteException {
+        if (cantidad <= 0) {
+            throw new IllegalArgumentException("❌ La cantidad solicitada debe ser mayor a cero.");
+        }
         if (cantidad > producto.getStock()) {
             throw new StockInsuficienteException("❌ Stock insuficiente para " + producto.getNombre() 
                 + ". Disponible: " + producto.getStock() + ", Solicitado: " + cantidad);

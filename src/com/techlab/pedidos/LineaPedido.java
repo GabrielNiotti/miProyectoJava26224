@@ -19,7 +19,7 @@ public class LineaPedido {
         return cantidad;
     }
 
-    // Calcula el subtotal de esta línea específica
+    // Calcula el subtotal
     public double getSubtotal() {
         return producto.getPrecio() * cantidad;
     }

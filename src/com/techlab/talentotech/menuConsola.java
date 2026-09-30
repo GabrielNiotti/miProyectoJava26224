@@ -38,7 +38,7 @@ public class menuConsola {
                 }
                 opcion = Integer.parseInt(entrada);
             } catch (NumberFormatException e) {
-                System.out.println("❌ Error: Debe ingresar un número entero válido.");
+                System.out.println(" Error: Debe ingresar un número entero válido.");
                 opcion = 0; 
                 continue;
             }
@@ -77,6 +77,8 @@ public class menuConsola {
         scanner.close();
     }
 
+    // agregar
+
     public static void agregarProducto(Scanner scanner) {
         int tipo = 0;
         do {
@@ -89,10 +91,10 @@ public class menuConsola {
             try {
                 tipo = Integer.parseInt(scanner.nextLine().trim());
                 if (tipo < 1 || tipo > 3) {
-                    System.out.println("❌ Opción incorrecta. Debe elegir 1, 2 o 3.");
+                    System.out.println(" Opción incorrecta. Debe elegir 1, 2 o 3.");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("❌ Debe ingresar un número: 1, 2 o 3.");
+                System.out.println(" Debe ingresar un número: 1, 2 o 3.");
                 tipo = 0;
             }
         } while (tipo < 1 || tipo > 3);
@@ -109,7 +111,7 @@ public class menuConsola {
             System.out.print("Ingrese stock: ");
             stock = Integer.parseInt(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("❌ Error de formato: Se ingresaron letras en vez de números. Producto no guardado.");
+            System.out.println(" Error de formato: Se ingresaron letras en vez de números. Producto no guardado.");
             return;
         }
 
@@ -122,7 +124,7 @@ public class menuConsola {
                     int mililitros = Integer.parseInt(scanner.nextLine().trim());
                     producto = new Perfume(nombre, precio, stock, mililitros);
                 } catch (NumberFormatException e) {
-                    System.out.println("❌ Tamaño inválido. Operación cancelada.");
+                    System.out.println("Tamaño inválido. Operación cancelada.");
                     return;
                 }
                 break;
@@ -142,6 +144,8 @@ public class menuConsola {
         System.out.println("✅ Producto agregado correctamente.");
         System.out.println("ID asignado: " + producto.getId());
     }
+
+    // listar
 
         public static void listarProductos() {
         System.out.println("\n--- LISTA DE PRODUCTOS ---");
@@ -165,6 +169,8 @@ public class menuConsola {
         System.out.println("-------------------------");
     }
 
+    // mostrar
+
     public static void mostrarProducto(Producto producto) {
         System.out.println("\n--- PRODUCTO ENCONTRADO ---");
         System.out.println("ID: " + producto.getId());
@@ -176,6 +182,8 @@ public class menuConsola {
             ((Etiquetables) producto).generarEtiqueta();
         }
     }
+
+    //buscar
 
     public static void buscarProducto(Scanner scanner) {
         System.out.println("\n--- BUSCAR PRODUCTO ---");
@@ -211,9 +219,11 @@ public class menuConsola {
             }
             System.out.println("No se encontró el producto.");
         } catch (NumberFormatException e) {
-            System.out.println("❌ Entrada inválida. Ingrese caracteres numéricos.");
+            System.out.println("Entrada inválida. Ingrese caracteres numéricos.");
         }
     }
+
+    // modificar
 
     public static void modificarProducto(Scanner scanner) {
         System.out.println("\n--- MODIFICAR PRODUCTO ---");
@@ -238,32 +248,34 @@ public class menuConsola {
                             System.out.print("Ingrese el nuevo precio: ");
                             Double precio = Double.parseDouble(scanner.nextLine().trim());
                             if (precio < 0) {
-                                System.out.println("❌ El precio no puede ser negativo.");
+                                System.out.println(" El precio no puede ser negativo.");
                                 return;
                             }
                             producto.setPrecio(precio);
-                            System.out.println("✅ Precio actualizado correctamente.");
+                            System.out.println("Precio actualizado correctamente.");
                         }
                         case 2 -> {
                             System.out.print("Ingrese el nuevo stock: ");
                             int stock = Integer.parseInt(scanner.nextLine().trim());
                             if (stock < 0) {
-                                System.out.println("❌ El stock no puede ser negativo.");
+                                System.out.println("El stock no puede ser negativo.");
                                 return;
                             }
                             producto.setStock(stock);
-                            System.out.println("✅ Stock actualizado correctamente.");
+                            System.out.println("Stock actualizado correctamente.");
                         }
-                        default -> System.out.println("❌ Opción incorrecta.");
+                        default -> System.out.println("Opción incorrecta.");
                     }
                     return;
                 }
             }
             System.out.println("No se encontró un producto con ese ID.");
         } catch (NumberFormatException e) {
-            System.out.println("❌ Error: Formato de número inválido.");
+            System.out.println("Error: Formato de número inválido.");
         }
     }
+
+    // eliminar
 
     public static void eliminarProducto(Scanner scanner) {
         System.out.println("\n--- ELIMINAR PRODUCTO ---");
@@ -276,13 +288,13 @@ public class menuConsola {
                 Producto producto = iterator.next();
                 if (producto.getId().equals(id)) {
                     iterator.remove();
-                    System.out.println("✅ Producto eliminado correctamente.");
+                    System.out.println(" Producto eliminado correctamente.");
                     return;
                 }
             }
-            System.out.println("❌ No se encontró un producto con ese ID.");
+            System.out.println("No se encontró un producto con ese ID.");
         } catch (NumberFormatException e) {
-            System.out.println("❌ ID inválido.");
+            System.out.println("ID inválido.");
         }
     }
 
@@ -291,7 +303,7 @@ public class menuConsola {
         public static void crearPedido(Scanner scanner) {
         System.out.println("\n--- CREAR NUEVO PEDIDO ---");
         if (productos.isEmpty()) {
-            System.out.println("❌ No hay productos en el inventario.");
+            System.out.println("No hay productos en el inventario.");
             return;
         }
 
@@ -312,16 +324,16 @@ public class menuConsola {
                 }
 
                 if (productoEncontrado == null) {
-                    System.out.println("❌ Producto no encontrado.");
+                    System.out.println(" Producto no encontrado.");
                 } else {
                     System.out.print("Ingrese la cantidad deseada: ");
                     int cantidad = Integer.parseInt(scanner.nextLine().trim());
 
                     if (cantidad <= 0) {
-                        System.out.println("❌ La cantidad debe ser mayor a cero.");
+                        System.out.println("La cantidad debe ser mayor a cero.");
                     } else {
                         nuevoPedido.agregarItem(productoEncontrado, cantidad);
-                        System.out.println("✅ Producto añadido al pedido temporal.");
+                        System.out.println("Producto añadido al pedido temporal.");
                     }
                 }
             } catch (NumberFormatException e) {
@@ -342,7 +354,7 @@ public class menuConsola {
             return;
         }
 
-        // --- NUEVA LÓGICA DE SELECCIÓN DE MÉTODO DE PAGO Y DESCUENTO ---
+        // --- LÓGICA DE SELECCIÓN DE MÉTODO DE PAGO Y DESCUENTO ---
         double totalOriginal = nuevoPedido.getCostoTotal();
         double totalConDescuento = totalOriginal;
         String metodoPago = "";
@@ -381,17 +393,14 @@ public class menuConsola {
 
         if (confirmar.equals("S")) {
             nuevoPedido.confirmarPedido();
-            
-            // Opcional: Si querés que en el historial quede guardado el precio con el descuento de efectivo,
-            // podés agregar un método setCostoTotal en tu clase Pedido y descomentar la línea de abajo:
-            // nuevoPedido.setCostoTotal(totalConDescuento); 
-            
             pedidos.add(nuevoPedido);
             System.out.println("🎉 ¡Pedido #" + nuevoPedido.getId() + " confirmado con éxito!");
         } else {
             System.out.println("❌ Pedido descartado.");
         }
     }
+
+    // listado de pedido
 
 
     public static void listarPedidos() {

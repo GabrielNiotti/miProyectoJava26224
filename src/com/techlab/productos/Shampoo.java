@@ -19,7 +19,7 @@ public class Shampoo extends Producto implements Vendible, Etiquetables {
     }
     // Implementacion del metodo abstracto de la interfaz Vendible
     @Override
-    public void aplicarDescuento(double porcentaje) {
+    public void aplicarDescuento(Double porcentaje) {
         System.out.println("Aplicando " + porcentaje + "%" + " de descuento a " + getNombre());
     }
 

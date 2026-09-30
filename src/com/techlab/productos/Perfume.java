@@ -19,7 +19,7 @@ public class Perfume extends Producto implements Vendible, Etiquetables {
     }
 
     @Override
-    public void aplicarDescuento(double porcentaje) {
+    public void aplicarDescuento(Double porcentaje) {
         System.out.println("Aplicando " + porcentaje + "% de descuento a " + getNombre());
     }
 

@@ -1,71 +1,57 @@
 package com.techlab.productos;
 
+import com.techlab.excepciones.PrecioInvalidoException;
+import com.techlab.excepciones.StockInvalidoException;
+
 public abstract class Producto {
 
-    // contador estatico :
-    // static vive a nivel de clase, no de instancia -> por eso sirve como contador global
     public static Long contadorId = 0L;
     private static int totalProductos = 0;
 
-    // ATRIBUTOS
     private Long id;
     private String nombre;
     private Double precio;
     private int stock;
 
-    // CONSTRUCTORES
-
-    public Producto (String nombre,Double precio,int stock){
+    public Producto (String nombre, Double precio, int stock){
+        if (precio == null || precio <= 0) {
+            throw new PrecioInvalidoException("❌ El precio debe ser mayor a cero.");
+        }
+        if (stock < 0) {
+            throw new StockInvalidoException("❌ El stock inicial no puede ser negativo.");
+        }
         this.id = ++contadorId;
-        // el ++ al principio es = suma y luego ejecuta.
-        // el ++ al final es  = ejecuta y después suma + 1
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
         totalProductos++;
     }     
 
-    // metodos abstractos
     public abstract String getCategoria();
 
-    // GETTERS Y SETTERS
-    public Long getId() {
-        return id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public Double getPrecio() {
-        return precio;
-    }
-
+    public Long getId() { return id; }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public Double getPrecio() { return precio; }
+    
     public void setPrecio(Double precio) {
+        if (precio == null || precio <= 0) {
+            throw new PrecioInvalidoException("❌ El nuevo precio debe ser mayor a cero.");
+        }
         this.precio = precio;
     }
 
-    public int getStock() {
-        return stock;
-    }
-
+    public int getStock() { return stock; }
+    
     public void setStock(int stock) {
+        if (stock < 0) {
+            throw new StockInvalidoException("❌ El stock modificado no puede ser negativo.");
+        }
         this.stock = stock;
     }
 
-    // metodo estatico
-    public static int getTotalProductos(){
-        return totalProductos;
-    }
+    public static int getTotalProductos(){ return totalProductos; }
 
-    
-    
-
-    // metodos propios de la clase
     public void mostrarDatos() {
         System.out.println("ID: " + id);
         System.out.println("Nombre: " + nombre);
@@ -73,12 +59,5 @@ public abstract class Producto {
         System.out.println("Stock: " + stock);
     }
 
-    protected abstract void aplicarDescuento(double d);
-
-
-    
-
-    
-
-   
+    public abstract void aplicarDescuento(Double porcentaje);
 }
