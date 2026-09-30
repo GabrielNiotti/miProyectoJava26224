@@ -1,28 +1,59 @@
 # Sistema de Gestión de Productos y Pedidos - Talento Tech 🛒
 
-Este proyecto es una aplicación de consola en **Java** desarrollada como parte de la cursada de Talento Tech. Modela un sistema de inventario y facturación para productos de estética y cuidado personal (Perfumes, Cremas y Shampoos), permitiendo la gestión del inventario (CRUD) y la simulación de compras mediante pedidos con control de stock y manejo de excepciones.
+Aplicación de consola en **Java** para la gestión de inventario y pedidos de productos de estética, desarrollada en Talento Tech.
 
 ## 🚀 Características Principales
 
-- **CRUD Completo de Productos:** Alta, baja, modificación, búsqueda y listado en memoria utilizando colecciones (`List` e `Iterator`).
-- **Gestión de Pedidos:** Creación de carritos de compras validados mediante un objeto intermedio (`LineaPedido`).
-- **Descuentos Inteligentes:** Implementación de un **10% de descuento automático** si el cliente selecciona abonar en **Efectivo**.
-- **Manejo Avanzado de Excepciones:** Flujo protegido contra ingresos inválidos en consola (`NumberFormatException`) y control de stock mediante la excepción personalizada `StockInsuficienteException`.
+- **CRUD de Productos:** Gestión completa en memoria usando colecciones (`List`, `Iterator`).
+- **Gestión de Pedidos:** Creación de pedidos mediante `LineaPedido` validando stock en tiempo real.
+- **Descuentos Inteligentes:** 10% de descuento automático en pagos en **Efectivo**.
+- **Modelado POO:** Uso de clases abstractas, herencia, encapsulamiento e interfaces (`Vendible`, `Etiquetables`).
+
+## ⚠️ Manejo Avanzado de Excepciones
+
+- `ProductoNoEncontradoException`: ID inexistente.
+- `StockInsuficienteException`: Supera el stock disponible.
+- `StockInvalidoException` y `PrecioInvalidoException`: Previenen valores negativos o nulos.
+
+## 🕹️ Ejemplo de Uso (Consola)
+
+```text
+===== MENÚ =====
+1 - Agregar Producto
+2 - Modificar Producto
+3 - Buscar Producto
+4 - Eliminar Producto
+5 - Listar productos
+6 - Crear Pedido
+7 - Listar Pedidos Realizados
+8 - Salir
+Seleccione una opción: 1
+
+--- AGREGAR PRODUCTO ---
+1 - Perfume
+2 - Crema
+3 - Shampoo
+Seleccione el tipo de producto: 1
+Ingrese nombre: Chanel
+Ingrese precio: 10000
+Ingrese stock: 5
+Ingrese tamaño del envase (ml): 100
+✅ Producto agregado correctamente.
+ID asignado: 1
+```
 
 ## 📦 Estructura de Paquetes
 
-El código se encuentra organizado bajo buenas prácticas de modularización:
-
-- `com.techlab.productos`: Contiene la clase abstracta `Producto`, las subclases (`Perfume`, `Crema`, `Shampoo`) y las interfaces (`Vendible`, `Etiquetables`).
-- `com.techlab.pedidos`: Contiene las clases `Pedido` y `LineaPedido` para la lógica de facturación.
-- `com.techlab.excepciones`: Contiene la excepción personalizada `StockInsuficienteException`.
-- `com.techlab.talentotech`: Aloja la clase principal ejecutable `menuConsola`.
+- `com.techlab.productos`: Clases base, subclases (`Perfume`, `Crema`, `Shampoo`) e interfaces.
+- `com.techlab.pedidos`: Lógica de transacciones y facturación.
+- `com.techlab.excepciones`: Excepciones personalizadas.
+- `com.techlab.talentotech`: Punto de entrada (`menuConsola`).
 
 ## 🛠️ Requisitos y Ejecución
 
-1. **Clonar el repositorio** o abrir la carpeta del proyecto en tu IDE preferido (recomendado: **Visual Studio Code** con la extensión *Extension Pack for Java*).
-2. Asegurarte de tener instalado **Java JDK 17** o superior.
-3. Ejecutar el archivo `menuConsola.java` para iniciar la interfaz interactiva.
+1. Abrir en tu IDE (VS Code o Eclipse) con **Java JDK 17+**.
+2. Ejecutar el archivo `menuConsola.java`.
 
 ## 🧑‍💻 Desarrollado por
-- Gabriel Niotti / Estudiante de Talento Tech
+
+- **Gabriel Niotti** — Estudiante de Talento Tech.
