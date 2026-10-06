@@ -1,22 +1,19 @@
 package com.techlab.talentotech;
 
-import com.techlab.excepciones.StockInsuficienteException;
-import com.techlab.pedidos.Pedido;
-import com.techlab.productos.Crema;
-import com.techlab.productos.Etiquetables;
-import com.techlab.productos.Perfume;
-import com.techlab.productos.Producto;
-import com.techlab.productos.Shampoo;
+import com.techlab.excepciones.*;
+import com.techlab.pedidos.*;
+import com.techlab.productos.*;
 import java.util.*;
 
 public class menuConsola {
+
     static List<Producto> productos = new ArrayList<>();
     static List<Pedido> pedidos = new ArrayList<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int opcion = 0;
-            
+
         do {
             System.out.println("\n===== MENÚ =====");
             System.out.println("1 - Agregar Producto");
@@ -39,37 +36,49 @@ public class menuConsola {
                 opcion = Integer.parseInt(entrada);
             } catch (NumberFormatException e) {
                 System.out.println(" Error: Debe ingresar un número entero válido.");
-                opcion = 0; 
+                opcion = 0;
                 continue;
             }
-                
-            switch (opcion) {
-                case 1:
-                    agregarProducto(scanner);
-                    break;
-                case 2:
-                    modificarProducto(scanner);
-                    break;
-                case 3:
-                    buscarProducto(scanner);
-                    break;
-                case 4:
-                    eliminarProducto(scanner);
-                    break;
-                case 5:
-                    listarProductos();
-                    break;
-                case 6:
-                    crearPedido(scanner);
-                    break;
-                case 7:
-                    listarPedidos();
-                    break;    
-                case 8:
-                    System.out.println("Saliendo del programa...");
-                    break;    
-                default:
-                    System.out.println("Opción incorrecta.");
+
+            try {
+                switch (opcion) {
+                    case 1:
+                        agregarProducto(scanner);
+                        break;
+                    case 2:
+                        modificarProducto(scanner);
+                        break;
+                    case 3:
+                        buscarProducto(scanner);
+                        break;
+                    case 4:
+                        eliminarProducto(scanner);
+                        break;
+                    case 5:
+                        listarProductos();
+                        break;
+                    case 6:
+                        crearPedido(scanner);
+                        break;
+                    case 7:
+                        listarPedidos();
+                        break;
+                    case 8:
+                        System.out.println("Saliendo del programa...");
+                        break;
+                    default:
+                        System.out.println("Opción incorrecta.");
+                }
+            } catch (PrecioInvalidoException e) {
+                System.out.println("\n Error de Validación (Precio): " + e.getMessage());
+            } catch (StockInvalidoException e) {
+                System.out.println("\n Error de Validación (Stock): " + e.getMessage());
+            } catch (StockInsuficienteException e) {
+                System.out.println("\n Error en Pedido (Inventario): " + e.getMessage());
+            } catch (ProductoNoEncontradoException e) {
+                System.out.println("\n Error de Búsqueda: " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                System.out.println("\n Error de Entrada: " + e.getMessage());
             }
 
         } while (opcion != 8);
@@ -77,8 +86,7 @@ public class menuConsola {
         scanner.close();
     }
 
-    // agregar
-
+    // --- AGREGAR PRODUCTO ---
     public static void agregarProducto(Scanner scanner) {
         int tipo = 0;
         do {
@@ -140,14 +148,15 @@ public class menuConsola {
                 break;
         }
 
-        productos.add(producto);
-        System.out.println("✅ Producto agregado correctamente.");
-        System.out.println("ID asignado: " + producto.getId());
+        if (producto != null) {
+            productos.add(producto);
+            System.out.println(" Producto agregado correctamente.");
+            System.out.println("ID asignado: " + producto.getId());
+        }
     }
 
-    // listar
-
-        public static void listarProductos() {
+    // --- LISTAR PRODUCTOS ---
+    public static void listarProductos() {
         System.out.println("\n--- LISTA DE PRODUCTOS ---");
         if (productos.isEmpty()) {
             System.out.println("No hay productos cargados.");
@@ -169,8 +178,7 @@ public class menuConsola {
         System.out.println("-------------------------");
     }
 
-    // mostrar
-
+    // --- MOSTRAR PRODUCTO ---
     public static void mostrarProducto(Producto producto) {
         System.out.println("\n--- PRODUCTO ENCONTRADO ---");
         System.out.println("ID: " + producto.getId());
@@ -183,8 +191,7 @@ public class menuConsola {
         }
     }
 
-    //buscar
-
+    // --- BUSCAR PRODUCTO ---
     public static void buscarProducto(Scanner scanner) {
         System.out.println("\n--- BUSCAR PRODUCTO ---");
         System.out.println("1 - Buscar por ID");
@@ -192,8 +199,8 @@ public class menuConsola {
         System.out.print("Seleccione una opción: ");
 
         try {
-            int opcion = Integer.parseInt(scanner.nextLine().trim());
-            if (opcion == 1) {
+            int opcionBuscador = Integer.parseInt(scanner.nextLine().trim());
+            if (opcionBuscador == 1) {
                 System.out.print("Ingrese el ID del producto: ");
                 Long id = Long.parseLong(scanner.nextLine().trim());
 
@@ -203,7 +210,9 @@ public class menuConsola {
                         return;
                     }
                 }
-            } else if (opcion == 2) {
+                throw new ProductoNoEncontradoException("No se encontró ningún producto con el ID: " + id);
+
+            } else if (opcionBuscador == 2) {
                 System.out.print("Ingrese el nombre del producto: ");
                 String nombre = scanner.nextLine().toUpperCase();
 
@@ -213,206 +222,166 @@ public class menuConsola {
                         return;
                     }
                 }
+                throw new ProductoNoEncontradoException("No se encontró ningún producto con el nombre: " + nombre);
             } else {
                 System.out.println("Opción incorrecta.");
-                return;
             }
-            System.out.println("No se encontró el producto.");
         } catch (NumberFormatException e) {
-            System.out.println("Entrada inválida. Ingrese caracteres numéricos.");
+            System.out.println(" Entrada inválida. Ingrese caracteres numéricos.");
         }
     }
 
-    // modificar
-
+        // --- MODIFICAR PRODUCTO (ACTUALIZADO: PERMITE MODIFICAR EL NOMBRE) ---
     public static void modificarProducto(Scanner scanner) {
         System.out.println("\n--- MODIFICAR PRODUCTO ---");
         try {
-            System.out.print("Ingrese el ID del producto: ");
+            System.out.print("Ingrese el ID del producto a modificar: ");
             Long id = Long.parseLong(scanner.nextLine().trim());
 
-            for (Producto producto : productos) {
-                if (producto.getId().equals(id)) {
-                    System.out.println("\nProducto encontrado:");
-                    mostrarProducto(producto);
-
-                    System.out.println("\n¿Qué desea modificar?");
-                    System.out.println("1 - Precio");
-                    System.out.println("2 - Stock");
-                    System.out.print("Seleccione una opción: ");
-
-                    int opcion = Integer.parseInt(scanner.nextLine().trim());
-
-                    switch (opcion) {
-                        case 1 -> {
-                            System.out.print("Ingrese el nuevo precio: ");
-                            Double precio = Double.parseDouble(scanner.nextLine().trim());
-                            if (precio < 0) {
-                                System.out.println(" El precio no puede ser negativo.");
-                                return;
-                            }
-                            producto.setPrecio(precio);
-                            System.out.println("Precio actualizado correctamente.");
-                        }
-                        case 2 -> {
-                            System.out.print("Ingrese el nuevo stock: ");
-                            int stock = Integer.parseInt(scanner.nextLine().trim());
-                            if (stock < 0) {
-                                System.out.println("El stock no puede ser negativo.");
-                                return;
-                            }
-                            producto.setStock(stock);
-                            System.out.println("Stock actualizado correctamente.");
-                        }
-                        default -> System.out.println("Opción incorrecta.");
-                    }
-                    return;
+            Producto productoEncontrado = null;
+            for (Producto p : productos) {
+                if (p.getId().equals(id)) {
+                    productoEncontrado = p;
+                    break;
                 }
             }
-            System.out.println("No se encontró un producto con ese ID.");
+
+            if (productoEncontrado == null) {
+                throw new ProductoNoEncontradoException("No se puede modificar: El ID no existe.");
+            }
+
+            System.out.println("Producto actual: " + productoEncontrado.getNombre());
+            
+            // 1. NUEVA SECCIÓN: MODIFICAR NOMBRE
+            System.out.print("Ingrese nuevo nombre (Vacío para mantener '" + productoEncontrado.getNombre() + "'): ");
+            String nuevoNombre = scanner.nextLine().trim().toUpperCase();
+            if (!nuevoNombre.isEmpty()) {
+                productoEncontrado.setNombre(nuevoNombre);
+            }
+
+            // 2. MODIFICAR PRECIO
+            System.out.print("Ingrese nuevo precio (Vacío para mantener $" + productoEncontrado.getPrecio() + "): ");
+            String nuevoPrecioStr = scanner.nextLine().trim();
+            if (!nuevoPrecioStr.isEmpty()) {
+                productoEncontrado.setPrecio(Double.parseDouble(nuevoPrecioStr));
+            }
+
+            // 3. MODIFICAR STOCK
+            System.out.print("Ingrese nuevo stock (Vacío para mantener " + productoEncontrado.getStock() + " unidades): ");
+            String nuevoStockStr = scanner.nextLine().trim();
+            if (!nuevoStockStr.isEmpty()) {
+                productoEncontrado.setStock(Integer.parseInt(nuevoStockStr));
+            }
+
+            System.out.println(" Producto modificado exitosamente.");
         } catch (NumberFormatException e) {
-            System.out.println("Error: Formato de número inválido.");
+            System.out.println(" Error: Formato numérico ingresado inválido.");
         }
     }
 
-    // eliminar
+// --- ELIMINAR PRODUCTO ---
 
     public static void eliminarProducto(Scanner scanner) {
         System.out.println("\n--- ELIMINAR PRODUCTO ---");
         try {
-            System.out.print("Ingrese el ID del producto: ");
+            System.out.print("Ingrese el ID del producto a eliminar: ");
             Long id = Long.parseLong(scanner.nextLine().trim());
-
-            Iterator<Producto> iterator = productos.iterator();
-            while (iterator.hasNext()) {
-                Producto producto = iterator.next();
-                if (producto.getId().equals(id)) {
-                    iterator.remove();
-                    System.out.println(" Producto eliminado correctamente.");
-                    return;
+            Producto productoEncontrado = null;
+            for (Producto p : productos) {
+                if (p.getId().equals(id)) {
+                    productoEncontrado = p;
+                    break;
                 }
             }
-            System.out.println("No se encontró un producto con ese ID.");
+            if (productoEncontrado == null) {
+                throw new ProductoNoEncontradoException("No se puede eliminar: El ID no existe.");
+            }
+            productos.remove(productoEncontrado);
+            System.out.println(" Producto '" + productoEncontrado.getNombre() + "' eliminado correctamente.");
         } catch (NumberFormatException e) {
-            System.out.println("ID inválido.");
+            System.out.println(" Error: Ingrese un ID numérico válido.");
         }
     }
+// --- CREAR PEDIDO ---
 
-    //crear pedido
-
-        public static void crearPedido(Scanner scanner) {
-        System.out.println("\n--- CREAR NUEVO PEDIDO ---");
+    public static void crearPedido(Scanner scanner) {
+        System.out.println("\n--- CREAR PEDIDO ---");
         if (productos.isEmpty()) {
-            System.out.println("No hay productos en el inventario.");
+            System.out.println("No hay productos cargados en el inventario.");
             return;
         }
-
         Pedido nuevoPedido = new Pedido();
         boolean agregando = true;
-
         while (agregando) {
+            listarProductos();
             try {
-                System.out.print("Ingrese el ID del producto que desea añadir: ");
-                Long idProd = Long.parseLong(scanner.nextLine().trim());
-
-                Producto productoEncontrado = null;
+                System.out.print("Ingrese el ID del producto a agregar al pedido (0 para finalizar): ");
+                Long id = Long.parseLong(scanner.nextLine().trim());
+                if (id == 0) {
+                    break;
+                }
+                Producto productoSeleccionado = null;
                 for (Producto p : productos) {
-                    if (p.getId().equals(idProd)) {
-                        productoEncontrado = p;
+                    if (p.getId().equals(id)) {
+                        productoSeleccionado = p;
                         break;
                     }
                 }
-
-                if (productoEncontrado == null) {
-                    System.out.println(" Producto no encontrado.");
-                } else {
-                    System.out.print("Ingrese la cantidad deseada: ");
-                    int cantidad = Integer.parseInt(scanner.nextLine().trim());
-
-                    if (cantidad <= 0) {
-                        System.out.println("La cantidad debe ser mayor a cero.");
-                    } else {
-                        nuevoPedido.agregarItem(productoEncontrado, cantidad);
-                        System.out.println("Producto añadido al pedido temporal.");
-                    }
+                if (productoSeleccionado == null) {
+                    throw new ProductoNoEncontradoException("El ID ingresado no coincide con ningún producto.");
+                }
+                System.out.print("Ingrese la cantidad requerida: ");
+                int cantidad = Integer.parseInt(scanner.nextLine().trim());
+                nuevoPedido.agregarItem(productoSeleccionado, cantidad);
+                System.out.println("🛒 Item agregado provisionalmente al carrito.");
+                System.out.print("¿Desea ingresar otro producto a este pedido? (S/N): ");
+                if (!scanner.nextLine().trim().equalsIgnoreCase("S")) {
+                    agregando = false;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("❌ Error: Debe ingresar un valor numérico válido.");
-            } catch (StockInsuficienteException e) {
-                System.out.println(e.getMessage());
-            }
-
-            System.out.print("\n¿Desea agregar otro producto al pedido? (S/N): ");
-            String respuesta = scanner.nextLine().trim().toUpperCase();
-            if (!respuesta.equals("S")) {
-                agregando = false;
+                System.out.println(" Error: Ingrese números válidos para los identificadores y las cantidades.");
             }
         }
-
-        if (nuevoPedido.getLineas().isEmpty()) {
-            System.out.println("Pedido cancelado porque no contiene productos.");
-            return;
-        }
-
-        // --- LÓGICA DE SELECCIÓN DE MÉTODO DE PAGO Y DESCUENTO ---
-        double totalOriginal = nuevoPedido.getCostoTotal();
-        double totalConDescuento = totalOriginal;
-        String metodoPago = "";
-
-        System.out.println("\n--- SELECCIONE MÉTODO DE PAGO ---");
-        System.out.println("1 - Efectivo (10% de descuento 🎉)");
-        System.out.println("2 - Tarjeta / Debito (Precio de lista)");
-        System.out.print("Seleccione una opción: ");
-        
-        try {
-            int opcionPago = Integer.parseInt(scanner.nextLine().trim());
-            if (opcionPago == 1) {
-                metodoPago = "EFECTIVO";
-                // Calculamos el 10% de descuento
-                double descuento = totalOriginal * 0.10;
-                totalConDescuento = totalOriginal - descuento;
-                System.out.printf("¡Se aplicó un 10%% de descuento por pago en efectivo! Ahorro: $%.2f\n", descuento);
-            } else {
-                metodoPago = "TARJETA/DEBITO";
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("⚠️ Opción inválida. Se procesará con precio de lista (Tarjeta).");
-            metodoPago = "TARJETA/DEBITO";
-        }
-
-        System.out.println("\n--- RESUMEN FINAL DEL PEDIDO ---");
-        nuevoPedido.mostrarDetallePedido();
-        if (metodoPago.equals("EFECTIVO")) {
-            System.out.printf("Forma de pago: %s\n", metodoPago);
-            System.out.printf("TOTAL NETO A PAGAR: $%.2f\n", totalConDescuento);
-            System.out.println("=================================");
-        }
-
-        System.out.print("¿Confirma el pedido? El stock se descontará (S/N): ");
-        String confirmar = scanner.nextLine().trim().toUpperCase();
-
-        if (confirmar.equals("S")) {
+        if (!nuevoPedido.getLineas().isEmpty()) {
+            int metodoPago = 0;
+            do {
+                System.out.println("\n--- SELECCIONE MÉTODO DE PAGO ---");
+                System.out.println("1 - Efectivo (10% de Descuento)");
+                System.out.println("2 - Tarjeta / Debito (Precio de lista)");
+                System.out.print("Seleccione una opción: ");
+                try {
+                    metodoPago = Integer.parseInt(scanner.nextLine().trim());
+                    if (metodoPago == 1) {
+                        nuevoPedido.setTipoPago("EFECTIVO");
+                    } else if (metodoPago == 2) {
+                        nuevoPedido.setTipoPago("TARJETA");
+                    } else {
+                        System.out.println(" Opción incorrecta. Seleccione 1 o 2.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println(" Error: Debe ingresar 1 o 2.");
+                    metodoPago = 0;
+                }
+            } while (metodoPago != 1 && metodoPago != 2);
             nuevoPedido.confirmarPedido();
+            System.out.println("\n--- RESUMEN FINAL DEL PEDIDO ---");
+            nuevoPedido.mostrarDetallePedido();
             pedidos.add(nuevoPedido);
-            System.out.println("🎉 ¡Pedido #" + nuevoPedido.getId() + " confirmado con éxito!");
+            System.out.println(" Pedido completado y registrado exitosamente.");
         } else {
-            System.out.println("❌ Pedido descartado.");
+            System.out.println(" Pedido cancelado: Carrito vacío.");
         }
     }
-
-    // listado de pedido
-
+// --- LISTAR PEDIDOS ---
 
     public static void listarPedidos() {
-        System.out.println("\n--- LISTA DE PEDIDOS REALIZADOS ---");
+        System.out.println("\n--- PEDIDOS REALIZADOS ---");
         if (pedidos.isEmpty()) {
-            System.out.println("No se ha realizado ningún pedido aún.");
+            System.out.println("No se han registrado pedidos todavía.");
             return;
         }
-
-        for (Pedido p : pedidos) {
-            p.mostrarDetallePedido();
+        for (Pedido pedido : pedidos) {
+            pedido.mostrarDetallePedido();
         }
     }
 }
-

@@ -15,10 +15,10 @@ public abstract class Producto {
 
     public Producto (String nombre, Double precio, int stock){
         if (precio == null || precio <= 0) {
-            throw new PrecioInvalidoException("❌ El precio debe ser mayor a cero.");
+            throw new PrecioInvalidoException("El precio debe ser mayor a cero.");
         }
         if (stock < 0) {
-            throw new StockInvalidoException("❌ El stock inicial no puede ser negativo.");
+            throw new StockInvalidoException(" El stock inicial no puede ser negativo.");
         }
         this.id = ++contadorId;
         this.nombre = nombre;
@@ -36,7 +36,7 @@ public abstract class Producto {
     
     public void setPrecio(Double precio) {
         if (precio == null || precio <= 0) {
-            throw new PrecioInvalidoException("❌ El nuevo precio debe ser mayor a cero.");
+            throw new PrecioInvalidoException(" El nuevo precio debe ser mayor a cero.");
         }
         this.precio = precio;
     }
@@ -45,7 +45,7 @@ public abstract class Producto {
     
     public void setStock(int stock) {
         if (stock < 0) {
-            throw new StockInvalidoException("❌ El stock modificado no puede ser negativo.");
+            throw new StockInvalidoException(" El stock modificado no puede ser negativo.");
         }
         this.stock = stock;
     }
@@ -60,4 +60,10 @@ public abstract class Producto {
     }
 
     public abstract void aplicarDescuento(Double porcentaje);
+
+    public void setId(int contadorId) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    
 }
