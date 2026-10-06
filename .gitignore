@@ -21,3 +21,5 @@ Thumbs.db
 # Archivos temporales de edición
 *.bak
 *.swp
+
+.idea/
