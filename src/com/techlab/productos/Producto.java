@@ -62,7 +62,7 @@ public abstract class Producto {
     public abstract void aplicarDescuento(Double porcentaje);
 
     public void setId(int contadorId) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.id = id;
     }
 
     
