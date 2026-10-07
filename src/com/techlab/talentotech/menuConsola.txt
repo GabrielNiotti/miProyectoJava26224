@@ -261,10 +261,10 @@ import java.util.*;
 
             // 5. Enviamos el objeto actualizado al servicio para que ejecute las validaciones de negocio
             productoService.actualizar(id, productoExistente);
-            System.out.println("✔ Producto modificado correctamente.");
+            System.out.println(" Producto modificado correctamente.");
 
         } catch (NumberFormatException e) {
-            System.out.println("❌ Error: Debe ingresar un valor numérico válido para el precio o el stock.");
+            System.out.println("Error: Debe ingresar un valor numérico válido para el precio o el stock.");
         }
     }
 

@@ -102,5 +102,11 @@ public class ProductoService {
         productos.remove(p);
     }
 
+    public Producto buscarPorId(int id) {
+        // TODO Auto-generated method stub
+        //throw new UnsupportedOperationException("Unimplemented method 'buscarPorId'");
+        return obtenerPorId(id);
+    }
+
     
 }

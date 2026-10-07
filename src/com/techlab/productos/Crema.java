@@ -12,6 +12,9 @@ public class Crema extends Producto implements Vendible, Etiquetables {
     public String getTipoPiel() {
         return tipoPiel;
     }
+    public void setTipoPiel(String tipoPiel) {
+        this.tipoPiel = tipoPiel;
+    }
 
     @Override
     public String getCategoria() {

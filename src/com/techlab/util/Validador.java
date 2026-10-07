@@ -1,90 +1,74 @@
 package com.techlab.util;
 
-import com.techlab.excepciones.StockInsuficienteException;
-import java.util.InputMismatchException;
+import com.techlab.excepciones.StockInvalidoException; // Importa tu excepción personalizada
 import java.util.Scanner;
 
 /*
     Clase con métodos de validación reutilizables.
-    Todos los metodos son estáticos: no necesitamos crear una instancia de Validador para usarlos.Se invocan directamente 
-
-    
-
+    Todos los métodos son estáticos: no necesitamos crear una instancia de Validador para usarlos.
+    Se invocan directamente.
 */
-
 public class Validador {
-    // Validaciones de datos del producto
-    // Estos métodos lanzan una excepción si el dato es invalido
-    // no retornan nada: si terminan sin lanzar la ecxepcion el dato es valido.
 
-    public static void validarNombre(String nombre){
-        // Un nombre nulo o vacío no representa un producto válido
-        if (nombre == null || nombre.trim().isEmpty()){
+    // ==========================================
+    // VALIDACIONES DE NEGOCIO (Lanzan excepciones)
+    // ==========================================
+
+    public static void validarNombre(String nombre) {
+        if (nombre == null || nombre.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre no puede estar vacío.");
         }
     }
 
-    public static void validarPrecio(double precio){
-        // no sean negativos
-        // aceptamos 0
-        if ( precio < 0){
+    public static void validarPrecio(double precio) {
+        if (precio < 0) {
             throw new IllegalArgumentException("El precio no puede ser negativo.");
         }
     }
 
-    public static void validarStock( int stock){
-        // stock negativo no es valido
-        // usamos nuestra excepcion personalizada
-        if (stock < 0){
-            throw new StockInsuficienteException("El stock no puede ser negativo.");
+    public static void validarStock(int stock) {
+        // Vinculado con tu clase StockInvalidoException
+        if (stock < 0) {
+            throw new StockInvalidoException("El stock no puede ser negativo.");
         }
     }
 
-    public static void validarCategoria (String categoria){
-        if(categoria == null || categoria.isBlank()){
-            throw new IllegalArgumentException("La categoria no puede estar vacia.");
+    public static void validarCategoria(String categoria) {
+        if (categoria == null || categoria.isBlank()) {
+            throw new IllegalArgumentException("La categoría no puede estar vacía.");
         }
     }
 
-    // Lectura por consola
-    // 
+    // ==========================================
+    // MÉTODOS DE LECTURA DE CONSOLA (UI)
+    // ==========================================
 
-    public static int leerEntero(Scanner sc , String mensaje){
-        // bucle infinito que se rompe cuando el usuario ingresa un entero valido.
-        while(true){
-            System.out.println(mensaje);
+    public static int leerEntero(Scanner sc, String mensaje) {
+        while (true) {
+            System.out.print(mensaje); // Cambiado a print para escribir al lado del texto
             try {
-                int valor = sc.nextInt();
-                sc.nextLine(); // limpia el salto de línea pendiente
-                return valor;
-            } catch (InputMismatchException e) {
-                System.out.println("Debe ingresar un número entero.Intente nuevamente.");
-                sc.nextLine(); // limpia el salto de línea pendiente
+                // Lee la línea completa como texto y la convierte, evitando errores de buffer
+                return Integer.parseInt(sc.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Error: Debe ingresar un número entero válido. Intente nuevamente.\n");
             }
         }
     }
 
-    public static double leerDouble(Scanner sc , String mensaje){
-        while(true){
-            System.out.println(mensaje);
+    public static double leerDouble(Scanner sc, String mensaje) {
+        while (true) {
+            System.out.print(mensaje); // Cambiado a print para escribir al lado del texto
             try {
-                double valor = sc.nextDouble();
-                sc.nextLine();
-                return valor;
-            } catch (Exception e) {
-                System.out.println("Debe ingresar un número decimal.(coma o punto");
-                sc.nextLine();
+                // Lee la línea completa y la convierte a decimal de forma segura
+                return Double.parseDouble(sc.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Error: Debe ingresar un número decimal válido (ej: 15.50). Intente nuevamente.\n");
             }
         }
     }
 
-    public static String leerTexto(Scanner sc , String mensaje){
-        // lectura simple de texto
-        System.out.println(mensaje);
+    public static String leerTexto(Scanner sc, String mensaje) {
+        System.out.print(mensaje); // Cambiado a print para mejor experiencia visual
         return sc.nextLine();
     }
-
-
-
-
 }

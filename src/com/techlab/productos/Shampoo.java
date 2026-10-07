@@ -11,6 +11,9 @@ public class Shampoo extends Producto implements Vendible, Etiquetables {
     public String getTipoCabello() {
         return tipoCabello;
     }
+    public void setTipoCabello(String tipoCabello) {
+        this.tipoCabello = tipoCabello;
+    }
 
     @Override 
     public String getCategoria() {
@@ -26,7 +29,7 @@ public class Shampoo extends Producto implements Vendible, Etiquetables {
     // Implementacion del metodo abstracto de la interfaz Etiquetable
     @Override
     public void generarEtiqueta() {
-        System.out.println("Etiqueta : " + getNombre() + " - Tipo de Piel " + tipoCabello);
+        System.out.println("Etiqueta : " + getNombre() + " - Tipo de Cabello: " + tipoCabello);
     }
 
 
