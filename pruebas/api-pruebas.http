@@ -1,0 +1,61 @@
+### Variables Globales
+@host = http://localhost:8080
+
+@idElegido  = 99
+
+### 1. Listar todos los productos
+GET {{host}}/api/productos
+Accept: application/json
+
+### 2. Crear una nueva Crema
+POST {{host}}/api/productos
+Content-Type: application/json
+
+{
+  "categoria": "crema",
+  "nombre": "Crema Hidratante manos",
+  "precio": 4500.0,
+  "stock": 10,
+  "tipoPiel": "Seca"
+}
+
+### 3. Crear un nuevo Perfume
+POST {{host}}/api/productos
+Content-Type: application/json
+
+{
+  "categoria": "perfume",
+  "nombre": "Acqua di Gio",
+  "precio": 85000.0,
+  "stock": 8,
+  "genero": "Masculino"
+}
+
+### 4. Crear un nuevo Shampoo
+POST {{host}}/api/productos
+Content-Type: application/json
+
+{
+  "categoria": "shampoo",
+  "nombre": "Shampoo Anticaída Anticaspa",
+  "precio": 3200.0,
+  "stock": 20,
+  "tipoCabello": "Graso"
+}
+
+### 5. Modificar un producto existente (Ejemplo: ID 1)
+# Pasamos el ID en la URL y los datos actualizados en el cuerpo JSON
+PUT {{host}}/api/productos/{{idElegido}}
+Content-Type: application/json
+
+{
+  "categoria": "crema",
+  "nombre": "Crema Hidratante Facial Renovada",
+  "precio": 5200.0,
+  "stock": 25,
+  "tipoPiel": "Mixta"
+}
+
+### 6. Eliminar un producto por su ID (Ejemplo: ID 2)
+# Solo requiere el método DELETE y el ID en la URL, sin cuerpo JSON
+DELETE {{host}}/api/productos/{{idElegido}}

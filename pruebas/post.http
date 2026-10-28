@@ -1,0 +1,10 @@
+POST  http://localhost:8080/producto
+Content-Type: application/json
+
+{
+    "categoria": "crema",
+    "nombre": "hinds",
+    "precio": 1000.00,
+    "stock": 50,
+    "tipo piel": "mixta"
+}
