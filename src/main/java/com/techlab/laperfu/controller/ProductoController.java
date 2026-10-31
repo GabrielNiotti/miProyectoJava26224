@@ -2,7 +2,7 @@ package com.techlab.laperfu.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,59 +14,44 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.techlab.laperfu.exception.ProductoNoEncontradoException;
 import com.techlab.laperfu.model.Producto;
 import com.techlab.laperfu.service.ProductoService;
 
 @RestController
-@RequestMapping("/api/productos")
+@RequestMapping("/producto")
 public class ProductoController {
 
-    @Autowired
-    private ProductoService productoService;
+    private final ProductoService productoService;
 
-    // GET: Listar todos
+    public ProductoController(ProductoService productoService) {
+        this.productoService = productoService;
+    }
+
     @GetMapping
     public ResponseEntity<List<Producto>> listar() {
         return ResponseEntity.ok(productoService.listarTodos());
     }
 
-    // GET: Buscar por ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerPorId(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(productoService.obtenerPorId(id));
-        } catch (ProductoNoEncontradoException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<Producto> obtener(@PathVariable Long id) {
+        Producto producto = productoService.obtenerPorId(id);
+        
+        return ResponseEntity.ok(producto);
     }
 
-    // POST: Crear un nuevo producto
     @PostMapping
-    public ResponseEntity<Producto> crearProducto(@RequestBody Producto nuevoProducto) {
-        // Al usar el constructor vacío de Jackson, se necesita guardar para que se agregue a la lista
-        Producto guardado = productoService.guardar(nuevoProducto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
+    public ResponseEntity<Producto> crear(@RequestBody Producto p) {
+        Producto nuevo = productoService.guardar(p);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
 
-    // PUT: Actualizar producto existente (SOLUCIÓN DEFINITIVA AL ID QUE NO EXISTE)
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarProducto(@PathVariable Long id, @RequestBody Producto productoEditado) {
-
-        // 1. Validamos con el método corregido del Service si el producto realmente existe
-        if (!productoService.existeProducto(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Error: El producto con ID " + id + " no existe en el sistema.");
-        }
-
-        // 2. Si existe, llamamos al método actualizar de tu Service que modifica la lista en memoria
-        Producto resultado = productoService.actualizar(id, productoEditado);
-        return ResponseEntity.ok(resultado);
+    public ResponseEntity<Producto> actualizar(@PathVariable Long id, @RequestBody Producto datos) {
+        return ResponseEntity.ok(productoService.actualizar(id, datos));
     }
 
-    // DELETE: Eliminar producto
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         productoService.eliminar(id);
         return ResponseEntity.noContent().build();
     }

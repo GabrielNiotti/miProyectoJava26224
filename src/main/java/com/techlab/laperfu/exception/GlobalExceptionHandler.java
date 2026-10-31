@@ -18,5 +18,4 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> manejarStock(StockInsuficienteException e) {
        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());   // 400
     }
-    // Nombre, precio o categoria invalidos
 }
