@@ -1,42 +1,93 @@
 package com.techlab.laperfu.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import java.math.BigDecimal;
 
 @Entity
-@Table(name = "producto") // Le avisa a Java que use tu tabla existente
+@Table(name = "producto")
 public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // Mapea tu INT AUTO_INCREMENT
+    private Long id;
 
+    @Column(nullable = false, length = 100)
     private String nombre;
-    private Double precio; // Mapea tu DECIMAL(10,2)
+
+    @Column(nullable = false)
+    private BigDecimal precio; 
+
+    @Column(nullable = false)
     private Integer stock;
 
-    @Column(name = "categoria_id") // Mapea exactamente tu columna de XAMPP
-    private Long categoriaId;
+    @Column(columnDefinition = "TEXT")
+    private String descripcion; 
 
-    private String descripcion; // Volvemos a 'descripcion' como pusiste en tu CREATE TABLE
+    @ManyToOne
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private Categoria categoria;
 
-    public Producto() {}
+    // Constructor Vacío (Requerido por JPA)
+    public Producto() {
+    }
 
-    // --- GETTERS Y SETTERS PERFECTOS ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Constructor Completo
+    public Producto(Long id, String nombre, BigDecimal precio, Integer stock, String descripcion, Categoria categoria) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.stock = stock;
+        this.descripcion = descripcion;
+        this.categoria = categoria;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    // Getters y Setters Manuales (Para evitar el procesador fallido)
+    public Long getId() { 
+        return id; 
+    }
+    public void setId(Long id) { 
+        this.id = id; 
+    }
 
-    public Double getPrecio() { return precio; }
-    public void setPrecio(Double precio) { this.precio = precio; }
+    public String getNombre() { 
+        return nombre; 
+    }
+    public void setNombre(String nombre) { 
+        this.nombre = nombre; 
+    }
 
-    public Integer getStock() { return stock; }
-    public void setStock(Integer stock) { this.stock = stock; }
+    public BigDecimal getPrecio() { 
+        return precio; 
+    }
+    public void setPrecio(BigDecimal precio) { 
+        this.precio = precio; 
+    }
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public Integer getStock() { 
+        return stock; 
+    }
+    public void setStock(Integer stock) { 
+        this.stock = stock; 
+    }
 
-    public Long getCategoriaId() { return categoriaId; }
-    public void setCategoriaId(Long categoriaId) { this.categoriaId = categoriaId; }
+    public String getDescripcion() { 
+        return descripcion; 
+    }
+    public void setDescripcion(String descripcion) { 
+        this.descripcion = descripcion; 
+    }
+
+    public Categoria getCategoria() { 
+        return categoria; 
+    }
+    public void setCategoria(Categoria categoria) { 
+        this.categoria = categoria; 
+    }
 }

@@ -1,8 +1,30 @@
-### 1. Listar todos los productos
+### ==========================================
+### ENDPOINTS DE CATEGORÍAS
+### ==========================================
+
+### 1. Crear una nueva categoría (Paso obligatorio inicial)
+POST http://localhost:8080/categoria
+Content-Type: application/json
+
+{
+  "nombre": "Perfumes Importados"
+}
+
+### 2. Listar todas las categorías (Para verificar los IDs creados)
+GET http://localhost:8080/categoria
+Accept: application/json
+
+
+### ==========================================
+### ENDPOINTS DE PRODUCTOS
+### ==========================================
+
+### 3. Listar todos los productos
 GET http://localhost:8080/producto
 Accept: application/json
 
-### 2. Crear un producto de prueba
+### 4. Crear un producto de prueba
+# 💡 NOTA: Cambiamos "categoriaId": 1 por el objeto "categoria" con su ID interno
 POST http://localhost:8080/producto
 Content-Type: application/json
 
@@ -10,7 +32,26 @@ Content-Type: application/json
   "nombre": "Versace Eros",
   "precio": 160000.0,
   "stock": 7,
-  "categoriaId": 1,
-  "descripcion": "Notas de menta, manzana verde y haba tonka."
+  "descripcion": "Notas de menta, manzana verde y haba tonka.",
+  "categoria": {
+    "id": 1
+  }
 }
 
+### 5. ACTUALIZAR UN PRODUCTO (PUT)
+# 🚀 Modifica los datos del perfume en el ID 7
+PUT http://localhost:8080/producto/7
+Content-Type: application/json
+
+{
+  "nombre": "Flower by Kenzo",
+  "precio": 175000.0,
+  "stock": 5,
+  "descripcion": "Perfume modificado: notas de salida cítricas, pimienta negra y maderas.",
+  "categoria": {
+    "id": 1
+  }
+}
+
+### 6. ELIMINAR UN PRODUCTO (DELETE)
+DELETE http://localhost:8080/producto/7

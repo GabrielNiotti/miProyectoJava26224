@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice // atiende los errores de TODOS los controladores
 public class GlobalExceptionHandler {
+
     // Si algún método lanza ProductoNoEncontradoException, se ejecuta este
     @ExceptionHandler(ProductoNoEncontradoException.class)
     public ResponseEntity<String> manejarNoEncontrado(ProductoNoEncontradoException e) {
@@ -16,6 +17,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler (StockInsuficienteException.class)
     public ResponseEntity<String> manejarStock(StockInsuficienteException e) {
+        System.out.println(e.getMessage());
        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());   // 400
     }
+    
+
 }
