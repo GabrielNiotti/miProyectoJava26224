@@ -2,6 +2,7 @@ package com.techlab.laperfu.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.techlab.laperfu.model.Producto;
 import com.techlab.laperfu.service.ProductoService;
@@ -22,6 +24,7 @@ public class ProductoController {
 
     private final ProductoService productoService;
 
+    @Autowired
     public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
     }
@@ -34,7 +37,7 @@ public class ProductoController {
     @GetMapping("/{id}")
     public ResponseEntity<Producto> obtener(@PathVariable Long id) {
         Producto producto = productoService.obtenerPorId(id);
-        
+
         return ResponseEntity.ok(producto);
     }
 
@@ -50,8 +53,28 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        productoService.eliminar(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
+        boolean eliminado = productoService.eliminar(id);
+
+        if (eliminado) {
+            return ResponseEntity.noContent().build(); // Retorna HTTP 204 (Eliminado con éxito, sin cuerpo)
+        } else {
+            return ResponseEntity.notFound().build(); // Retorna HTTP 404 (No encontrado)
+        }
     }
+
+    // Dentro de tu clase ProductoController:
+
+    // Ruta: GET http://localhost:8080/producto/buscar?nombre=versace
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Producto>> buscarPorNombre(@RequestParam String nombre) {
+        return ResponseEntity.ok(productoService.buscarPorNombre(nombre));
+    }
+
+    // Ruta: GET http://localhost:8080/producto/categoria/1
+    @GetMapping("/categoria/{categoriaId}")
+    public ResponseEntity<List<Producto>> listarPorCategoria(@PathVariable Long categoriaId) {
+        return ResponseEntity.ok(productoService.buscarPorCategoria(categoriaId));
+    }
+
 }

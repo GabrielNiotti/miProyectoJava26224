@@ -16,6 +16,7 @@ public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column (columnDefinition = "INT")
     private Long id;
 
     @Column(nullable = false, length = 100)
@@ -29,6 +30,9 @@ public class Producto {
 
     @Column(columnDefinition = "TEXT")
     private String descripcion; 
+
+    @Column (length = 255)
+    private String img;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)
@@ -82,6 +86,14 @@ public class Producto {
     }
     public void setDescripcion(String descripcion) { 
         this.descripcion = descripcion; 
+    }
+
+    public String getImg() { 
+        return img; 
+    }
+
+    public void setImg(String img) { 
+        this.img = img; 
     }
 
     public Categoria getCategoria() { 

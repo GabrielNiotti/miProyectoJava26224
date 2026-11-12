@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Perfu - Listado de Pedidos</title>
+    <link rel="preconnect" href="https://googleapis.com" />
+    <link rel="preconnect" href="https://gstatic.com" crossorigin />
+    <link href="https://googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cloudflare.com" />
+    <link rel="stylesheet" href="./css/estilos.css" />
+    
+    <!-- 🎨 ESTILOS PREMIUM INTERNOS (Arreglan la vista sin depender de librerías externas) -->
+    <style>
+      body {
+        font-family: 'Open Sans', sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 0;
+        color: #212529;
+      }
+      
+      /* Cabecera Estilizada y Centrada */
+      header {
+        background-color: #ffffff;
+        padding: 15px 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border-bottom: 1px solid #e9ecef;
+      }
+      .header-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .logo-box {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .logo-title {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #563d7c;
+        margin: 0;
+        letter-spacing: -0.5px;
+      }
+
+      /* Botón Volver Redondeado */
+      .btn-volver {
+        text-decoration: none;
+        color: #495057;
+        border: 1px solid #ced4da;
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+      }
+      .btn-volver:hover {
+        background-color: #212529;
+        color: #ffffff;
+        border-color: #212529;
+      }
+
+      /* Contenedor Principal Centrado en el Medio */
+      main {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+      
+      /* Tarjeta Flotante Blanca */
+      .panel-historial {
+        background-color: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+      }
+      
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #f1f3f5;
+        padding-bottom: 15px;
+      }
+      .panel-title {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      /* Botón Actualizar Premium */
+      .btn-actualizar {
+        background: linear-gradient(135deg, #212529 0%, #343a40 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 30px;
+        padding: 10px 24px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      }
+      .btn-actualizar:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      }
+
+      /* Estilización Minimalista de la Tabla sin tocar sus datos */
+      .table-responsive {
+        overflow-x: auto;
+        border-radius: 10px;
+        border: 1px solid #e9ecef;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+      thead th {
+        background-color: #111418;
+        color: #ffffff;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 15px;
+      }
+      tbody td {
+        padding: 16px;
+        border-bottom: 1px solid #f1f3f5;
+        font-size: 0.95rem;
+      }
+      tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+      tbody tr:hover {
+        background-color: #f1f3f5;
+      }
+      
+      /* Badges de estado e ID refinados */
+      .fw-bold.text-primary {
+        color: #2b6cb0 !important;
+      }
+      .text-success.fw-bold {
+        color: #2f855a !important;
+      }
+      .badge {
+        background-color: #feebc8;
+        color: #c05621;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        display: inline-block;
+      }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado Organizado -->
+    <header>
+        <div class="header-container">
+            <div class="logo-box">
+                <img src="./imagenes/logo.png" alt="Logo de La Perfu" style="height: 50px; width: auto;" />
+                <h1 class="logo-title">La Perfu</h1>
+            </div>
+            <a href="index.html" class="btn-volver">
+                <i class="fa-solid fa-arrow-left me-2"></i> Volver a la Tienda
+            </a>
+        </div>
+    </header>
+
+    <!-- Caja Centralizada -->
+    <main>
+        <section class="panel-historial">
+            <div class="panel-header">
+                <h2 class="panel-title">Historial de Pedidos 📋</h2>
+                <button type="button" class="btn-actualizar" id="btnActualizarPedidos">
+                    Actualizar Lista <i class="fa-solid fa-rotate ms-1"></i>
+                </button>
+            </div>
+            
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Pedido</th>
+                            <th>Fecha y Hora</th>
+                            <th>Método de Pago</th>
+                            <th>Financiación</th>
+                            <th>Total de la Orden</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaPedidosBody">
+                        <tr>
+                            <td colspan="6" style="text-center: center; color: #6c757d; padding: 30px;">
+                                Cargando historial desde el servidor...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Mantener tu script original intacto -->
+    <script src="./js/pedidos.js"></script>
+</body>
+</html>

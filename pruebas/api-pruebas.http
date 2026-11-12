@@ -54,4 +54,25 @@ Content-Type: application/json
 }
 
 ### 6. ELIMINAR UN PRODUCTO (DELETE)
-DELETE http://localhost:8080/producto/7
+DELETE http://localhost:8080/producto/9
+
+### ==========================================
+### PRUEBAS DE CONSULTAS Y FILTROS (DTO)
+### ==========================================
+
+### 1. Filtrar perfumes por Categoría (ej: Categoría ID 1)
+GET http://localhost:8080/producto/categoria/1
+Accept: application/json
+
+### 2. Filtrar pedidos por Estado (PENDIENTE, EN_PROCESO o REALIZADO)
+GET http://localhost:8080/pedido/filtrar/estado?estado=PENDIENTE
+Accept: application/json
+
+### 3. Filtrar pedidos por Método de Pago (ej: tarjeta, efectivo)
+GET http://localhost:8080/pedido/filtrar/pago?metodo=tarjeta
+Accept: application/json
+
+### Filtrar productos por Categoría (ej: ID 1)
+GET http://localhost:8080/producto/categoria/4
+Accept: application/json
+
