@@ -15,11 +15,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()); // 404
     }
 
-    @ExceptionHandler (StockInsuficienteException.class)
+    @ExceptionHandler(StockInsuficienteException.class)
     public ResponseEntity<String> manejarStock(StockInsuficienteException e) {
         System.out.println(e.getMessage());
-       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());   // 400
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400
     }
-    
+
+    // Manejador para cuando no se encuentra una categoría (404)
+    @ExceptionHandler(CategoriaNoEncontradaException.class)
+    public ResponseEntity<String> manejarCategoriaNoEncontrada(CategoriaNoEncontradaException e) {
+        System.out.println(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()); // 404
+    }
+
+    // Manejador para las reglas de tu clase Validador (400)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> manejarArgumentoInvalido(IllegalArgumentException e) {
+        System.out.println(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400
+    }
 
 }

@@ -1,6 +1,9 @@
 package com.techlab.laperfu.util;
 
+import java.math.BigDecimal;
+
 import com.techlab.laperfu.exception.StockInsuficienteException;
+import com.techlab.laperfu.model.Categoria;
 
 public class Validador {
 
@@ -10,21 +13,22 @@ public class Validador {
         }
     }
 
-    public static void validarPrecio(double precio) {
-        if (precio < 0) {
-            throw new IllegalArgumentException("El precio no puede ser negativo.");
+     public static void validarPrecio(BigDecimal precio) {
+        if (precio == null || precio.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("El precio es obligatorio y no puede ser negativo.");
         }
+ 
     }
 
-    public static void validarStock(int stock) {
-        if (stock < 0) {
+    public static void validarStock(Integer stock) {
+        if (stock == null || stock < 0) {
             throw new StockInsuficienteException("El stock no puede ser negativo.");
         }
     }
 
-    public static void validarCategoria(String categoria) {
-        if (categoria == null || categoria.trim().isEmpty()) {
-            throw new IllegalArgumentException("La categoría no puede estar vacía.");
+    public static void validarCategoria(Categoria categoria) {
+        if (categoria == null || categoria.getId() == null) {
+            throw new IllegalArgumentException("Debe asignar una categoría válida con su ID.");
         }
     }
 }

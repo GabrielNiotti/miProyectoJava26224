@@ -40,11 +40,11 @@ Content-Type: application/json
 
 ### 5. ACTUALIZAR UN PRODUCTO (PUT)
 # 🚀 Modifica los datos del perfume en el ID 7
-PUT http://localhost:8080/producto/7
+PUT http://localhost:8080/producto/60
 Content-Type: application/json
 
 {
-  "nombre": "Flower by Kenzo",
+  "nombre": "Flower by Kenzo 100ml",
   "precio": 175000.0,
   "stock": 5,
   "descripcion": "Perfume modificado: notas de salida cítricas, pimienta negra y maderas.",
@@ -75,4 +75,62 @@ Accept: application/json
 ### Filtrar productos por Categoría (ej: ID 1)
 GET http://localhost:8080/producto/categoria/4
 Accept: application/json
+
+### ==========================================
+### PRUEBAS DE VALIDACIÓN (Deben dar 400 Bad Request)
+### ==========================================
+
+### 1. Probar Precio Negativo
+POST http://localhost:8080/producto
+Content-Type: application/json
+
+{
+  "nombre": "Perfume Precio Negativo",
+  "precio": -15000.0,
+  "stock": 5,
+  "descripcion": "Esta prueba debe rebotar con error 400",
+  "categoria": {
+    "id": 1
+  }
+}
+
+### 2. Probar Nombre Vacío
+POST http://localhost:8080/producto
+Content-Type: application/json
+
+{
+  "nombre": "   ",
+  "precio": 50000.0,
+  "stock": 5,
+  "descripcion": "Esta prueba debe rebotar por nombre vacío",
+  "categoria": {
+    "id": 1
+  }
+}
+
+### 3. Probar Stock Negativo
+POST http://localhost:8080/producto
+Content-Type: application/json
+
+{
+  "nombre": "Perfume Sin Stock",
+  "precio": 50000.0,
+  "stock": -3,
+  "descripcion": "Esta prueba debe rebotar por stock negativo",
+  "categoria": {
+    "id": 1
+  }
+}
+
+### 4. Probar sin Categoría
+POST http://localhost:8080/producto
+Content-Type: application/json
+
+{
+  "nombre": "Perfume Huérfano",
+  "precio": 50000.0,
+  "stock": 5,
+  "descripcion": "Esta prueba debe rebotar por falta de categoría"
+}
+
 
