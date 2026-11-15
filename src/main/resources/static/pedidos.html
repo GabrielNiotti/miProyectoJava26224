@@ -186,17 +186,18 @@
         <section class="panel-historial">
             <div class="panel-header">
                 <h2 class="panel-title">Historial de Pedidos 📋</h2>
-                <button type="button" class="btn-actualizar" id="btnActualizarPedidos">
+                <button type="button" onclick="cargarHistorialDePedidos()" class="btn-actualizar" id="btnActualizarPedidos">
                     Actualizar Lista <i class="fa-solid fa-rotate ms-1"></i>
                 </button>
             </div>
             
             <div class="table-responsive">
-                <table>
+                <table class=""table table-hover align-middle>
                     <thead>
                         <tr>
                             <th>ID Pedido</th>
                             <th>Fecha y Hora</th>
+                            <th>Productos</th>
                             <th>Método de Pago</th>
                             <th>Financiación</th>
                             <th>Total de la Orden</th>

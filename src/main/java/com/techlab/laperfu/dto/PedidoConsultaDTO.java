@@ -2,6 +2,7 @@ package com.techlab.laperfu.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class PedidoConsultaDTO {
 
@@ -12,18 +13,21 @@ public class PedidoConsultaDTO {
     private BigDecimal total;
     private String estado;
     private Integer cantidadProductos;
+    private List<DetallePedidoConsultaDTO> items;
 
     public PedidoConsultaDTO() {
     }
 
-    public PedidoConsultaDTO(Long id, LocalDateTime fecha, String metodoPago, Integer cuotas, BigDecimal total, String estado, Integer cantidadProductos) {
+    public PedidoConsultaDTO(Long id, LocalDateTime fecha, String metodoPago, Integer cuotas, BigDecimal total, String estado, List<DetallePedidoConsultaDTO> items) {
         this.id = id;
         this.fecha = fecha;
         this.metodoPago = metodoPago;
         this.cuotas = cuotas;
         this.total = total;
         this.estado = estado;
-        this.cantidadProductos = cantidadProductos;
+        this.items = items;
+        // Calculamos la cantidad total de ítems automáticamente a partir de la lista
+        this.cantidadProductos = (items != null) ? items.size() : 0;
     }
 
     public Long getId() { return id; }
@@ -46,5 +50,7 @@ public class PedidoConsultaDTO {
 
     public Integer getCantidadProductos() { return cantidadProductos; }
     public void setCantidadProductos(Integer cantidadProductos) { this.cantidadProductos = cantidadProductos; }
-}
 
+    public List<DetallePedidoConsultaDTO> getItems() { return items; }
+    public void setItems(List<DetallePedidoConsultaDTO> items) { this.items = items; }
+}

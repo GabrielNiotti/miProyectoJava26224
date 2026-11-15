@@ -1,14 +1,13 @@
-# Laperfu - Back-End API
+# Laperfu - Full-Stack E-Commerce & Back-End API
 ### 🎓 Proyecto Final - Talento Tech
 **Creado por:** Gabriel Pablo Niotti
 
-Este es el proyecto back-end para **Laperfu**, una API REST desarrollada en **Java con Spring Boot** para la gestión de un catálogo de perfumes y la administración del ciclo de vida de pedidos comerciales en tiempo real. La aplicación incluye el control de stock, cálculos dinámicos de financiación/descuentos, consultas personalizadas mediante DTOs, excepciones personalizadas y mapeos relacionales avanzados.
+Este es el proyecto integral para **Laperfu**, compuesto por una API REST desarrollada en **Java con Spring Boot** y un **Front-End interactivo (HTML5, Bootstrap 5, JavaScript ES6)** para la gestión de un catálogo de perfumes y la administración del ciclo de vida de pedidos comerciales en tiempo real. La aplicación incluye validaciones de negocio centralizadas, cálculos dinámicos de financiación/descuentos, consultas detalladas mediante DTOs, excepciones personalizadas y gestión de estados en vivo.
 
 ## 🛠️ Tecnologías y Versiones Utilizadas
-* **Java:** JDK 25 LTS
-* **Framework:** Spring Boot 3.x
-* **Persistencia:** Spring Data JPA / Hibernate
+* **Back-End:** Java (JDK 25 LTS), Spring Boot 3.x, Spring Data JPA / Hibernate
 * **Base de Datos:** MySQL (Configurado localmente en el puerto `3307` vía XAMPP)
+* **Front-End:** HTML5, CSS3, Bootstrap 5.3.8, JavaScript Vanilla (Fetch API, LocalStorage, Toasts & Modals)
 * **Editor:** Visual Studio Code (con Lombok 1.18.48 / Getters y Setters tradicionales)
 
 ---
@@ -48,7 +47,7 @@ CREATE TABLE IF NOT EXISTS pedido (
     total DECIMAL(10,2) NOT NULL,
     metodo_pago VARCHAR(50) NOT NULL DEFAULT 'efectivo',
     cuotas INT DEFAULT 1,
-    estado VARCHAR(20) DEFAULT 'PENDIENTE'
+    estado VARCHAR(30) DEFAULT 'PENDIENTE'
 );
 
 -- 4. Tabla detalle de pedido (Renglones internos de cada orden)
@@ -94,7 +93,7 @@ src/main/java/com/techlab/laperfu/
 │
 ├── service/
 │   ├── CategoriaService.java        # Lógica de negocio e integridad de categorías
-│   └── ProductoService.java         # Lógica de negocio, stock y mapeo a DTOs de productos
+│   └── ProductoService.java         # Lógica de negocio blindada, validaciones y mapeo de productos
 │
 ├── repository/
 │   ├── CategoriaRepository.java     # Acceso a datos de JPA para categorías
@@ -104,6 +103,7 @@ src/main/java/com/techlab/laperfu/
 ├── dto/
 │   ├── PedidoDTO.java               # DTO de entrada para procesar el carrito JSON
 │   ├── PedidoConsultaDTO.java       # DTO de respuesta optimizado para reportes de pedidos
+│   ├── DetallePedidoConsultaDTO.java# DTO de detalle por renglón (producto, cantidad y subtotal)
 │   └── ProductoConsultaDTO.java     # DTO de respuesta limpio con el nombre de categoría
 │
 ├── model/
@@ -112,12 +112,23 @@ src/main/java/com/techlab/laperfu/
 │   ├── Pedido.java                  # Entidad Pedido (Mapeo @OneToMany)
 │   └── DetallePedido.java           # Entidad intermedia de compra (Mapeo @ManyToOne)
 │
+├── util/
+│   └── Validador.java               # Validaciones centralizadas de reglas de negocio (400 Bad Request)
+│
 └── exception/
-    ├── GlobalExceptionHandler.java  # Capturador centralizado de errores API
+    ├── GlobalExceptionHandler.java  # Capturador centralizado de errores API (400 / 404)
     ├── ProductoNoEncontradoException.java
     ├── CategoriaNoEncontradaException.java
     └── StockInsuficienteException.java
 ```
+
+---
+
+## 🖥️ Características del Front-End Integrado
+* **Carrito de Compras Persistente:** Gestión de cantidades, subtotales y almacenamiento en `LocalStorage`.
+* **Asistente de Checkout (Modal Bootstrap):** Cálculo automático de descuento del 10% en efectivo, pago neto con débito y financiación en cuotas fijas con tarjeta de crédito.
+* **Notificaciones No Intrusivas:** Confirmación de transacciones exitosas mediante componentes `Toast` flotantes de Bootstrap.
+* **Panel de Administración de Pedidos (`pedidos.html`):** Visualización en tiempo real de las órdenes con desglose de fragancias compradas, máquina de estados cíclica (`PENDIENTE` ➔ `EN_PROCESO` ➔ `REALIZADO`), cancelación reversible (`CANCELADO` ➔ `Reactivar`) y actualización dinámica sin recargar la página.
 
 ---
 
@@ -211,11 +222,11 @@ Content-Type: application/json
   ]
 }
 
-### 8. Listar todo el historial de pedidos
+### 8. Listar todo el historial de pedidos (con detalle de ítems)
 GET http://localhost:8080/pedido
 Accept: application/json
 
-### 9. Cambiar el estado de un pedido de forma dinámica (PENDIENTE -> EN_PROCESO -> REALIZADO)
+### 9. Cambiar el estado de un pedido de forma dinámica (PENDIENTE, EN_PROCESO, REALIZADO, CANCELADO)
 PUT http://localhost:8080/pedido/1/estado?nuevoEstado=EN_PROCESO
 Content-Type: application/json
 
@@ -228,7 +239,7 @@ Content-Type: application/json
 GET http://localhost:8080/producto/categoria/1
 Accept: application/json
 
-### 11. Filtrar pedidos por Estado (PENDIENTE, EN_PROCESO, REALIZADO)
+### 11. Filtrar pedidos por Estado (PENDIENTE, EN_PROCESO, REALIZADO, CANCELADO)
 GET http://localhost:8080/pedido/filtrar/estado?estado=PENDIENTE
 Accept: application/json
 

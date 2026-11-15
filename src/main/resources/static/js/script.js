@@ -314,13 +314,20 @@ function procesarPagoYEnviarBackend() {
     if (!response.ok) throw new Error("Error en el servidor al guardar el pedido");
     return response.json();
   })
-  .then(resultado => {
+    .then(resultado => {
     if (resultado.status === "success") {
-      alert("¡Compra procesada con éxito! El pedido fue asentado en la base de datos.");
       modalCheckout.hide();
       eliminarCarrito(); // Limpia la pantalla y el LocalStorage
+
+      // Dispara la notificación flotante de Bootstrap
+      const toastEl = document.getElementById('toastCompraExitosa');
+      if (toastEl) {
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 4500 });
+        toastBootstrap.show();
+      }
     }
   })
+
   .catch(error => {
     console.error("Error en la transacción:", error);
     alert("Hubo un problema al procesar el pago.");
@@ -423,6 +430,42 @@ window.addEventListener("DOMContentLoaded", () => {
   if (btnConfirmarFinal) {
     btnConfirmarFinal.addEventListener("click", procesarPagoYEnviarBackend);
   }
+
+  // =========================================================
+// INICIALIZACIÓN DE EVENTOS DEL CHECKOUT Y PAGOS
+// =========================================================
+document.addEventListener("DOMContentLoaded", () => {
+ // =========================================================
+// INICIALIZACIÓN INMEDIATA DE EVENTOS DEL CHECKOUT Y PAGOS
+// =========================================================
+
+// 1. Botón "Finalizar Compra" en el carrito
+document.addEventListener("click", (e) => {
+  if (e.target.closest(".finalizarCompra")) {
+    abrirModalCheckout();
+  }
+});
+
+// 2. Cambio en el método de pago (Efectivo, Débito, Crédito)
+const selectMetodo = document.getElementById("selectMetodoPago");
+if (selectMetodo) {
+  selectMetodo.addEventListener("change", calcularMontoFinalYCuotas);
+}
+
+// 3. Cambio en la cantidad de cuotas (1, 3, 6)
+const selectCuotas = document.getElementById("selectCuotas");
+if (selectCuotas) {
+  selectCuotas.addEventListener("change", calcularMontoFinalYCuotas);
+}
+
+// 4. Botón "Confirmar y Pagar" dentro del Modal
+const btnConfirmar = document.getElementById("btnConfirmarPagoFinal");
+if (btnConfirmar) {
+  btnConfirmar.addEventListener("click", procesarPagoYEnviarBackend);
+}
+
+});
+
 
 
 
