@@ -40,7 +40,7 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
           </ul>`;
         }
 
-               // 2. Lógica visual de colores y secuencia circular de estados (incluye CANCELADO reversible)
+        // 2. ESTADOS
         let badgeStyle = '';
         let textoBoton = '';
         let proximoEstado = '';
@@ -70,7 +70,7 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
 
         const botonAccion = `<button type="button" class="btn-cambiar-estado" data-id="${ped.id}" data-estado="${proximoEstado}" style="background-color: #212529; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; font-weight: 600; margin-left: 8px;">${textoBoton}</button>`;
 
-        // 3. Renderizamos la fila completa (Asegurate de tener 7 columnas en tu <thead> HTML)
+        // 3. Renderizamos la fila completa
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="fw-bold text-primary">#${ped.id}</td>

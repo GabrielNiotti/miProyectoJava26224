@@ -3,7 +3,7 @@ package com.techlab.laperfu.service;
 import com.techlab.laperfu.exception.ProductoNoEncontradoException;
 import com.techlab.laperfu.model.Producto;
 import com.techlab.laperfu.repository.ProductoRepository;
-import com.techlab.laperfu.util.Validador; // 1. Importamos tu Validador
+import com.techlab.laperfu.util.Validador;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

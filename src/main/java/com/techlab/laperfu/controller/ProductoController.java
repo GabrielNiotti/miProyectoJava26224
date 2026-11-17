@@ -1,6 +1,7 @@
 package com.techlab.laperfu.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -75,6 +76,45 @@ public class ProductoController {
     @GetMapping("/categoria/{categoriaId}")
     public ResponseEntity<List<Producto>> listarPorCategoria(@PathVariable Long categoriaId) {
         return ResponseEntity.ok(productoService.buscarPorCategoria(categoriaId));
+    }
+
+    // ENDPOINT PARA SUBIR IMÁGENES AL SERVIDOR
+    // ENDPOINT PARA SUBIR IMÁGENES AL SERVIDOR
+    @PostMapping("/subir-imagen")
+    public ResponseEntity<?> subirImagen(
+            @RequestParam("archivo") org.springframework.web.multipart.MultipartFile archivo) {
+        try {
+            if (archivo.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "No se seleccionó ningún archivo."));
+            }
+
+            // Limpiamos espacios o caracteres especiales del nombre del archivo
+            String nombreLimpio = archivo.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-_]", "_");
+            String nombreArchivo = System.currentTimeMillis() + "_" + nombreLimpio;
+            // 1. Guardamos en la carpeta fuente del proyecto (persistente)
+            java.nio.file.Path carpetaSrc = java.nio.file.Paths.get(System.getProperty("user.dir"), "src", "main",
+                    "resources", "static", "imagenes");
+            if (!java.nio.file.Files.exists(carpetaSrc)) {
+                java.nio.file.Files.createDirectories(carpetaSrc);
+            }
+            java.nio.file.Files.copy(archivo.getInputStream(), carpetaSrc.resolve(nombreArchivo),
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            // 2. Copiamos también en target/classes para que se vea al instante sin
+            // reiniciar
+            java.nio.file.Path carpetaTarget = java.nio.file.Paths.get(System.getProperty("user.dir"), "target",
+                    "classes", "static", "imagenes");
+            if (java.nio.file.Files.exists(carpetaTarget)) {
+                java.nio.file.Files.copy(carpetaSrc.resolve(nombreArchivo), carpetaTarget.resolve(nombreArchivo),
+                        java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            return ResponseEntity.ok(Map.of("nombreArchivo", nombreArchivo));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Error al subir imagen: " + e.getMessage()));
+        }
     }
 
 }

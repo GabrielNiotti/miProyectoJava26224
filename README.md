@@ -2,12 +2,12 @@
 ### 🎓 Proyecto Final - Talento Tech
 **Creado por:** Gabriel Pablo Niotti
 
-Este es el proyecto integral para **Laperfu**, compuesto por una API REST desarrollada en **Java con Spring Boot** y un **Front-End interactivo (HTML5, Bootstrap 5, JavaScript ES6)** para la gestión de un catálogo de perfumes y la administración del ciclo de vida de pedidos comerciales en tiempo real. La aplicación incluye validaciones de negocio centralizadas, cálculos dinámicos de financiación/descuentos, consultas detalladas mediante DTOs, excepciones personalizadas y gestión de estados en vivo.
+Este es el proyecto integral para **Laperfu**, compuesto por una API REST desarrollada en **Java con Spring Boot** y un **Front-End interactivo (HTML5, Bootstrap 5, JavaScript ES6)** para la gestión de un catálogo de productos y la administración del ciclo de vida de pedidos comerciales en tiempo real. La aplicación incluye un panel de administración visual con subida de imágenes, validaciones de negocio centralizadas, cálculos dinámicos de financiación/descuentos, consultas detalladas mediante DTOs y gestión de estados en vivo.
 
 ## 🛠️ Tecnologías y Versiones Utilizadas
-* **Back-End:** Java (JDK 25 LTS), Spring Boot 3.x, Spring Data JPA / Hibernate
+* **Back-End:** Java (JDK 25 LTS), Spring Boot 3.x, Spring Data JPA / Hibernate, Spring Boot DevTools
 * **Base de Datos:** MySQL (Configurado localmente en el puerto `3307` vía XAMPP)
-* **Front-End:** HTML5, CSS3, Bootstrap 5.3.8, JavaScript Vanilla (Fetch API, LocalStorage, Toasts & Modals)
+* **Front-End:** HTML5, CSS3, Bootstrap 5.3.8, FontAwesome 6, JavaScript Vanilla (Fetch API, FormData, LocalStorage, Toasts & Modals)
 * **Editor:** Visual Studio Code (con Lombok 1.18.48 / Getters y Setters tradicionales)
 
 ---
@@ -79,16 +79,19 @@ CREATE TABLE IF NOT EXISTS detalle_pedido (
 
 ---
 
-## 📁 Estructura del Proyecto (Backend Java)
+## 📁 Estructura del Proyecto
 
-El código fuente se encuentra modularizado bajo el paquete principal `com.techlab.laperfu`:
+El código fuente se encuentra modularizado bajo el paquete principal `com.techlab.laperfu` y los recursos estáticos en `src/main/resources/static/`:
 
 ```text
 src/main/java/com/techlab/laperfu/
 │
+├── config/
+│   └── CorsConfig.java              # Configuración global de CORS y cabeceras HTTP
+│
 ├── controller/
 │   ├── CategoriaController.java     # Endpoints de consulta y carga de categorías
-│   ├── ProductoController.java      # Endpoints CRUD y consultas para productos e imágenes
+│   ├── ProductoController.java      # Endpoints CRUD, filtros y subida de imágenes (MultipartFile)
 │   └── PedidoController.java        # Endpoints transaccionales, estados dinámicos y reportes
 │
 ├── service/
@@ -120,15 +123,25 @@ src/main/java/com/techlab/laperfu/
     ├── ProductoNoEncontradoException.java
     ├── CategoriaNoEncontradaException.java
     └── StockInsuficienteException.java
+
+src/main/resources/static/
+├── index.html                       # Tienda pública, catálogo y carrito de compras
+├── pedidos.html                     # Panel de historial y gestión de estados de pedidos
+├── admin.html                       # Backoffice visual para CRUD de productos y categorías
+├── imagenes/                        # Almacenamiento de imágenes del catálogo
+└── js/
+    ├── script.js                    # Lógica de tienda, carrito persistente y checkout
+    ├── pedidos.js                   # Lógica de reportes, filtros y cambio de estados
+    └── admin.js                     # Lógica de gestión de inventario, subida de fotos y filtros
 ```
 
 ---
 
 ## 🖥️ Características del Front-End Integrado
-* **Carrito de Compras Persistente:** Gestión de cantidades, subtotales y almacenamiento en `LocalStorage`.
-* **Asistente de Checkout (Modal Bootstrap):** Cálculo automático de descuento del 10% en efectivo, pago neto con débito y financiación en cuotas fijas con tarjeta de crédito.
-* **Notificaciones No Intrusivas:** Confirmación de transacciones exitosas mediante componentes `Toast` flotantes de Bootstrap.
-* **Panel de Administración de Pedidos (`pedidos.html`):** Visualización en tiempo real de las órdenes con desglose de fragancias compradas, máquina de estados cíclica (`PENDIENTE` ➔ `EN_PROCESO` ➔ `REALIZADO`), cancelación reversible (`CANCELADO` ➔ `Reactivar`) y actualización dinámica sin recargar la página.
+* **Tienda Pública y Carrito Persistente (`index.html`):** Catálogo dinámico, gestión de cantidades en `LocalStorage` y asistente de checkout con cálculo automático de descuento del 10% en efectivo, pago neto con débito y financiación en cuotas fijas con tarjeta de crédito.
+* **Backoffice / Panel de Administración (`admin.html`):** Interfaz visual para crear categorías y dar de alta, editar o eliminar productos en vivo. Incluye subida real de archivos de imagen desde la computadora (`FormData`), generación automática de nombres únicos en el servidor para evitar colisiones, vista previa en miniaturas en la tabla de inventario y filtros combinados por nombre y categoría.
+* **Panel de Gestión de Pedidos (`pedidos.html`):** Visualización en tiempo real de las órdenes con desglose de productos comprados, máquina de estados cíclica (`PENDIENTE` ➔ `EN_PROCESO` ➔ `REALIZADO`), cancelación reversible (`CANCELADO` ➔ `Reactivar`) y actualización dinámica sin recargar la página.
+* **Notificaciones No Intrusivas:** Confirmación de todas las operaciones mediante alertas flotantes (`Toast` de Bootstrap) con respaldo visual automático.
 
 ---
 
@@ -226,27 +239,33 @@ Content-Type: application/json
 GET http://localhost:8080/pedido
 Accept: application/json
 
-### 9. Cambiar el estado de un pedido de forma dinámica (PENDIENTE, EN_PROCESO, REALIZADO, CANCELADO)
+
+9. Cambiar el estado de un pedido de forma dinámica (PENDIENTE, EN_PROCESO, REALIZADO, CANCELADO)
+
 PUT http://localhost:8080/pedido/1/estado?nuevoEstado=EN_PROCESO
 Content-Type: application/json
 
+==========================================
 
-### ==========================================
-### ENDPOINTS DE CONSULTAS Y FILTROS (DTOs 🔍)
-### ==========================================
 
-### 10. Filtrar perfumes por ID de Categoría
+ENDPOINTS DE CONSULTAS Y FILTROS (DTOs 🔍)
+
+
+==========================================
+
+
+10. Filtrar productos por ID de Categoría
+
 GET http://localhost:8080/producto/categoria/1
 Accept: application/json
 
-### 11. Filtrar pedidos por Estado (PENDIENTE, EN_PROCESO, REALIZADO, CANCELADO)
+11. Filtrar pedidos por Estado (PENDIENTE, EN_PROCESO, REALIZADO, CANCELADO)
+
 GET http://localhost:8080/pedido/filtrar/estado?estado=PENDIENTE
 Accept: application/json
 
-### 12. Filtrar pedidos por Método de Pago (ej: credito, efectivo)
+12. Filtrar pedidos por Método de Pago (ej: credito, efectivo)
+
 GET http://localhost:8080/pedido/filtrar/pago?metodo=credito
 Accept: application/json
 ```
-
----
-*Documentación técnica actualizada con éxito y lista para su presentación en el proyecto final Talento Tech.* 🚀

@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de Administración - Laperfu</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body class="bg-light">
+    <!-- Barra de Navegación Admin -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="index.html"
+          ><i class="fa-solid fa-boxes-stacked me-2"></i>Laperfu Admin</a
+        >
+        <div class="d-flex gap-2">
+          <a href="index.html" class="btn btn-outline-light btn-sm"
+            ><i class="fa-solid fa-store me-1"></i> Ir a la Tienda</a
+          >
+          <a href="pedidos.html" class="btn btn-outline-warning btn-sm"
+            ><i class="fa-solid fa-receipt me-1"></i> Ver Pedidos</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="row g-4">
+        <!-- COLUMNA IZQUIERDA: Alta de Categorías y Formulario CRUD de Productos -->
+        <div class="col-lg-4">
+          <!-- 1. Card Crear Categoría -->
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-dark text-white fw-semibold">
+              <i class="fa-solid fa-tags me-2"></i>Nueva Categoría
+            </div>
+            <div class="card-body">
+              <form id="formCategoria" class="d-flex gap-2">
+                <input
+                  type="text"
+                  id="nombreCategoria"
+                  class="form-control"
+                  placeholder="Ej: Fragancias, Cuidado Personal..."
+                  required
+                />
+                <button type="submit" class="btn btn-dark fw-semibold">
+                  Crear
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- 2. Card Formulario Producto (Crear / Editar) -->
+          <div class="card border-0 shadow-sm">
+            <div
+              class="card-header bg-primary text-white fw-semibold d-flex justify-content-between align-items-center"
+            >
+              <span id="tituloFormProducto"
+                ><i class="fa-solid fa-plus-circle me-2"></i>Nuevo
+                Producto</span
+              >
+              <button
+                type="button"
+                id="btnCancelarEdicion"
+                class="btn btn-sm btn-light d-none"
+              >
+                Cancelar
+              </button>
+            </div>
+            <div class="card-body">
+              <form id="formProducto">
+                <input type="hidden" id="productoId" />
+                <!-- Guarda el ID cuando editamos -->
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold"
+                    >Nombre del Producto *</label
+                  >
+                  <input
+                    type="text"
+                    id="prodNombre"
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">Precio ($) *</label>
+                    <input
+                      type="number"
+                      id="prodPrecio"
+                      class="form-control"
+                      step="0.01"
+                      min="0"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">Stock *</label>
+                    <input
+                      type="number"
+                      id="prodStock"
+                      class="form-control"
+                      min="0"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Categoría *</label>
+                  <select id="prodCategoria" class="form-select" required>
+                    <option value="">Cargando categorías...</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold"
+                    >Imagen del Producto (Opcional)</label
+                  >
+                  <input
+                    type="file"
+                    id="prodArchivoImg"
+                    class="form-control"
+                    accept="image/*"
+                  />
+                  <input type="hidden" id="prodImg" />
+                  <!-- Conserva el nombre actual si editás sin cambiar foto -->
+                  <div class="form-text" id="infoImgActual">
+                    Seleccioná una imagen desde tu computadora (JPG, PNG, WEBP).
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Descripción</label>
+                  <textarea
+                    id="prodDescripcion"
+                    class="form-control"
+                    rows="2"
+                  ></textarea>
+                </div>
+
+                <button
+                  type="submit"
+                  id="btnGuardarProducto"
+                  class="btn btn-primary w-100 fw-bold"
+                >
+                  <i class="fa-solid fa-floppy-disk me-1"></i> Guardar Producto
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: Filtros y Tabla de Catálogo -->
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+              <div class="row g-2 align-items-center">
+                <div class="col-md-5">
+                  <input
+                    type="text"
+                    id="filtroNombre"
+                    class="form-control"
+                    placeholder="🔍 Buscar producto por nombre..."
+                  />
+                </div>
+                <div class="col-md-4">
+                  <select id="filtroCategoria" class="form-select">
+                    <option value="TODAS">Todas las categorías</option>
+                  </select>
+                </div>
+                <div class="col-md-3 text-end">
+                  <button
+                    type="button"
+                    id="btnLimpiarFiltros"
+                    class="btn btn-outline-secondary w-100"
+                  >
+                    Limpiar Filtros
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>ID</th>
+                      <th>Producto</th>
+                      <th>Categoría</th>
+                      <th>Precio</th>
+                      <th>Stock</th>
+                      <th class="text-end">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaAdminProductos">
+                    <tr>
+                      <td colspan="6" class="text-center py-4 text-muted">
+                        Cargando inventario...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast de Notificaciones -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div
+        id="toastAdmin"
+        class="toast align-items-center text-bg-dark border-0"
+        role="alert"
+      >
+        <div class="d-flex">
+          <div class="toast-body fw-semibold" id="toastAdminMensaje">
+            Operación exitosa
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://jsdelivr.net"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <script src="./js/admin.js?v=2"></script>
+  </body>
+</html>

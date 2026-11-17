@@ -40,13 +40,13 @@ Content-Type: application/json
 
 ### 5. ACTUALIZAR UN PRODUCTO (PUT)
 # 🚀 Modifica los datos del perfume en el ID 7
-PUT http://localhost:8080/producto/60
+PUT http://localhost:8080/producto/6
 Content-Type: application/json
 
 {
   "nombre": "Flower by Kenzo 100ml",
   "precio": 175000.0,
-  "stock": 5,
+  "stock": 10,
   "descripcion": "Perfume modificado: notas de salida cítricas, pimienta negra y maderas.",
   "categoria": {
     "id": 1
@@ -60,16 +60,16 @@ DELETE http://localhost:8080/producto/9
 ### PRUEBAS DE CONSULTAS Y FILTROS (DTO)
 ### ==========================================
 
-### 1. Filtrar perfumes por Categoría (ej: Categoría ID 1)
-GET http://localhost:8080/producto/categoria/1
+### 1. Filtrar productos por Categoría (ej: Categoría ID 1)
+GET http://localhost:8080/producto/categoria/5
 Accept: application/json
 
 ### 2. Filtrar pedidos por Estado (PENDIENTE, EN_PROCESO o REALIZADO)
 GET http://localhost:8080/pedido/filtrar/estado?estado=PENDIENTE
 Accept: application/json
 
-### 3. Filtrar pedidos por Método de Pago (ej: tarjeta, efectivo)
-GET http://localhost:8080/pedido/filtrar/pago?metodo=tarjeta
+### 3. Filtrar pedidos por Método de Pago (ej: credito, debito, efectivo)
+GET http://localhost:8080/pedido/filtrar/pago?metodo=credito
 Accept: application/json
 
 ### Filtrar productos por Categoría (ej: ID 1)
