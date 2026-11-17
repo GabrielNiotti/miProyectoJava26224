@@ -22,7 +22,7 @@ public class Validador {
 
     public static void validarStock(Integer stock) {
         if (stock == null || stock < 0) {
-            throw new StockInsuficienteException("El stock no puede ser negativo.");
+            throw new IllegalArgumentException("El stock es obligatorio y no puede ser negativo.");
         }
     }
 

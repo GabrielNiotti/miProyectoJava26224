@@ -290,7 +290,8 @@ function eliminarProducto(id) {
   })
     .then(async res => {
       if (!res.ok) {
-        throw new Error('No se puede eliminar: el producto está asociado a pedidos existentes.');
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error ||'No se puede eliminar: el producto está asociado a pedidos existentes.');
       }
       mostrarNotificacion('Producto eliminado del catálogo', 'success');
       cargarProductos();

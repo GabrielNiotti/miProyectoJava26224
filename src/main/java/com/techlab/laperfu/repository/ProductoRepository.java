@@ -18,5 +18,11 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     // 3. Buscar productos con poco stock (ej: menor o igual a 5 unidades)
     List<Producto> findByStockLessThanEqual(Integer cantidad);
+
+    // 4. Verificar si ya existe un producto con ese nombre al crear (ignora mayúsculas/minúsculas)
+    boolean existsByNombreIgnoreCase(String nombre);
+
+    // 5. Verificar si ya existe otro producto con ese nombre al editar (ignorando el propio ID)
+    boolean existsByNombreIgnoreCaseAndIdNot(String nombre, Long id);
     
 }

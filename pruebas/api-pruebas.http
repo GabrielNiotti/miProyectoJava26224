@@ -1,8 +1,8 @@
 ### ==========================================
-### ENDPOINTS DE CATEGORÍAS
+### 1. ENDPOINTS DE CATEGORÍAS
 ### ==========================================
 
-### 1. Crear una nueva categoría (Paso obligatorio inicial)
+### 1. Crear una nueva categoría (Paso obligatorio inicial -> 201 Created)
 POST http://localhost:8080/categoria
 Content-Type: application/json
 
@@ -10,21 +10,32 @@ Content-Type: application/json
   "nombre": "Perfumes Importados"
 }
 
-### 2. Listar todas las categorías (Para verificar los IDs creados)
+### 2. Listar todas las categorías (-> 200 OK)
 GET http://localhost:8080/categoria
 Accept: application/json
 
 
 ### ==========================================
-### ENDPOINTS DE PRODUCTOS
+### 2. ENDPOINTS DE PRODUCTOS (CRUD Y FILTROS)
 ### ==========================================
 
-### 3. Listar todos los productos
+### 3. Listar todos los productos (-> 200 OK)
 GET http://localhost:8080/producto
 Accept: application/json
 
-### 4. Crear un producto de prueba
-# 💡 NOTA: Cambiamos "categoriaId": 1 por el objeto "categoria" con su ID interno
+### 4. Obtener un producto por ID (-> 200 OK)
+GET http://localhost:8080/producto/1
+Accept: application/json
+
+### 5. Filtrar productos por nombre (-> 200 OK)
+GET http://localhost:8080/producto/buscar?nombre=versace
+Accept: application/json
+
+### 6. Filtrar productos por Categoría (-> 200 OK)
+GET http://localhost:8080/producto/categoria/1
+Accept: application/json
+
+### 7. Crear un producto nuevo (-> 201 Created)
 POST http://localhost:8080/producto
 Content-Type: application/json
 
@@ -38,8 +49,7 @@ Content-Type: application/json
   }
 }
 
-### 5. ACTUALIZAR UN PRODUCTO (PUT)
-# 🚀 Modifica los datos del perfume en el ID 7
+### 8. Actualizar un producto existente (-> 200 OK)
 PUT http://localhost:8080/producto/6
 Content-Type: application/json
 
@@ -53,34 +63,66 @@ Content-Type: application/json
   }
 }
 
-### 6. ELIMINAR UN PRODUCTO (DELETE)
+### 9. Eliminar un producto sin pedidos asociados (-> 204 No Content)
 DELETE http://localhost:8080/producto/9
 
+
 ### ==========================================
-### PRUEBAS DE CONSULTAS Y FILTROS (DTO)
+### 3. ENDPOINTS DE PEDIDOS (FLUJO Y FILTROS)
 ### ==========================================
 
-### 1. Filtrar productos por Categoría (ej: Categoría ID 1)
-GET http://localhost:8080/producto/categoria/5
+### 10. Crear un nuevo pedido y descontar stock (-> 201 Created)
+POST http://localhost:8080/pedido
+Content-Type: application/json
+
+{
+  "total": 350000.00,
+  "metodoPago": "credito",
+  "cuotas": 3,
+  "items": [
+    { "id": 1, "cantidad": 1, "precio": 160000.00 },
+    { "id": 2, "cantidad": 1, "precio": 190000.00 }
+  ]
+}
+
+### 11. Listar todos los pedidos con su detalle (-> 200 OK)
+GET http://localhost:8080/pedido
 Accept: application/json
 
-### 2. Filtrar pedidos por Estado (PENDIENTE, EN_PROCESO o REALIZADO)
+### 12. Cambiar estado de un pedido (PENDIENTE, EN_PROCESO, REALIZADO, CANCELADO -> 200 OK)
+PUT http://localhost:8080/pedido/1/estado?nuevoEstado=EN_PROCESO
+
+### 13. Filtrar pedidos por Estado (-> 200 OK)
 GET http://localhost:8080/pedido/filtrar/estado?estado=PENDIENTE
 Accept: application/json
 
-### 3. Filtrar pedidos por Método de Pago (ej: credito, debito, efectivo)
+### 14. Filtrar pedidos por Método de Pago (-> 200 OK)
 GET http://localhost:8080/pedido/filtrar/pago?metodo=credito
 Accept: application/json
 
-### Filtrar productos por Categoría (ej: ID 1)
-GET http://localhost:8080/producto/categoria/4
-Accept: application/json
 
 ### ==========================================
-### PRUEBAS DE VALIDACIÓN (Deben dar 400 Bad Request)
+### 4. VALIDACIONES DE PRODUCTOS (400 / 409)
 ### ==========================================
 
-### 1. Probar Precio Negativo
+### 15. Producto con nombre duplicado (-> 409 Conflict)
+POST http://localhost:8080/producto
+Content-Type: application/json
+
+{
+  "nombre": "Versace Eros",
+  "precio": 160000.0,
+  "stock": 5,
+  "descripcion": "Debe rebotar por nombre duplicado.",
+  "categoria": {
+    "id": 1
+  }
+}
+
+### 16. Eliminar producto incluido en pedidos (-> 409 Conflict)
+DELETE http://localhost:8080/producto/1
+
+### 17. Precio negativo (-> 400 Bad Request)
 POST http://localhost:8080/producto
 Content-Type: application/json
 
@@ -88,13 +130,13 @@ Content-Type: application/json
   "nombre": "Perfume Precio Negativo",
   "precio": -15000.0,
   "stock": 5,
-  "descripcion": "Esta prueba debe rebotar con error 400",
+  "descripcion": "Debe rebotar con error 400.",
   "categoria": {
     "id": 1
   }
 }
 
-### 2. Probar Nombre Vacío
+### 18. Nombre vacío (-> 400 Bad Request)
 POST http://localhost:8080/producto
 Content-Type: application/json
 
@@ -102,13 +144,13 @@ Content-Type: application/json
   "nombre": "   ",
   "precio": 50000.0,
   "stock": 5,
-  "descripcion": "Esta prueba debe rebotar por nombre vacío",
+  "descripcion": "Debe rebotar por nombre vacío.",
   "categoria": {
     "id": 1
   }
 }
 
-### 3. Probar Stock Negativo
+### 19. Stock negativo (-> 400 Bad Request)
 POST http://localhost:8080/producto
 Content-Type: application/json
 
@@ -116,13 +158,13 @@ Content-Type: application/json
   "nombre": "Perfume Sin Stock",
   "precio": 50000.0,
   "stock": -3,
-  "descripcion": "Esta prueba debe rebotar por stock negativo",
+  "descripcion": "Debe rebotar por stock negativo.",
   "categoria": {
     "id": 1
   }
 }
 
-### 4. Probar sin Categoría
+### 20. Producto sin categoría (-> 400 Bad Request)
 POST http://localhost:8080/producto
 Content-Type: application/json
 
@@ -130,7 +172,50 @@ Content-Type: application/json
   "nombre": "Perfume Huérfano",
   "precio": 50000.0,
   "stock": 5,
-  "descripcion": "Esta prueba debe rebotar por falta de categoría"
+  "descripcion": "Debe rebotar por falta de categoría."
 }
 
 
+### ==========================================
+### 5. VALIDACIONES DE PEDIDOS (400 / 404)
+### ==========================================
+
+### 21. Pedido con stock insuficiente (-> 400 Bad Request)
+POST http://localhost:8080/pedido
+Content-Type: application/json
+
+{
+  "total": 500000.00,
+  "metodoPago": "efectivo",
+  "cuotas": 1,
+  "items": [
+    { "id": 1, "cantidad": 9999, "precio": 150000.00 }
+  ]
+}
+
+### 22. Pedido con producto inexistente (-> 404 Not Found)
+POST http://localhost:8080/pedido
+Content-Type: application/json
+
+{
+  "total": 150000.00,
+  "metodoPago": "efectivo",
+  "cuotas": 1,
+  "items": [
+    { "id": 999, "cantidad": 1, "precio": 150000.00 }
+  ]
+}
+
+### 23. Pedido con carrito vacío (-> 400 Bad Request)
+POST http://localhost:8080/pedido
+Content-Type: application/json
+
+{
+  "total": 0.00,
+  "metodoPago": "efectivo",
+  "cuotas": 1,
+  "items": []
+}
+
+### 24. Cambiar estado de un pedido inexistente (-> 404 Not Found)
+PUT http://localhost:8080/pedido/999/estado?nuevoEstado=EN_PROCESO
