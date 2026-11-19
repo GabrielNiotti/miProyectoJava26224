@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS pedido (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS item_pedido (
+CREATE TABLE IF NOT EXISTS detalle_pedido (
     id BIGINT NOT NULL AUTO_INCREMENT,
     cantidad INT NOT NULL,
     precio_unitario DOUBLE NOT NULL,
@@ -156,7 +156,7 @@ laperfu/
     │   ├── config/          # CorsConfig y SecurityConfig (reglas Stateless JWT)
     │   ├── controller/      # AuthController, ProductoController, CategoriaController, PedidoController
     │   ├── dto/             # AuthRequest, PedidoRequestDTO, PedidoResponseDTO, etc.
-    │   ├── model/           # Usuario, Producto, Categoria, Pedido, ItemPedido
+    │   ├── model/           # Usuario, Producto, Categoria, Pedido, DetallePedido
     │   ├── repository/      # Repositorios Spring Data JPA
     │   ├── security/        # JwtService, JwtAuthenticationFilter, UsuarioDetailsService
     │   └── service/         # Lógica de negocio y control de stock
