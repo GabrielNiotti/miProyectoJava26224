@@ -1,0 +1,49 @@
+@baseUrl = http://localhost:8080
+
+### 1. Registrar usuario administrador (ya registrado -> dará 409 si repetís)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{ "email": "admin@mail.com", "password": "1234" }
+
+### 2. Registrar usuario común (cliente -> 201 Created)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{ "email": "usuario@mail.com", "password": "1234" }
+
+### 3. Login del administrador
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{ "email": "admin@mail.com", "password": "1234" }
+
+### 4. Login del usuario común
+# @name loginUser
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{ "email": "usuario@mail.com", "password": "1234" }
+
+### 5. Listar productos sin token (-> 200 OK)
+GET {{baseUrl}}/producto
+
+### 6. Listar pedidos sin token (-> 403 Forbidden)
+GET {{baseUrl}}/pedido
+
+### 7. Listar pedidos con token de usuario (-> 200 OK)
+GET {{baseUrl}}/pedido
+Authorization: Bearer {{loginUser.response.body.token}}
+
+### 8. Borrar producto con token de usuario común (-> 403 Forbidden)
+DELETE {{baseUrl}}/producto/9999
+Authorization: Bearer {{loginUser.response.body.token}}
+
+### 9. Borrar producto con token de administrador (-> 404 Not Found, pasó seguridad)
+DELETE {{baseUrl}}/producto/9999
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### 10. Borrar producto con token alterado (-> 403 Forbidden)
+DELETE {{baseUrl}}/producto/9999
+Authorization: Bearer {{loginAdmin.response.body.token}}x
