@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://gstatic.com" crossorigin />
     <link href="https://googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cloudflare.com" />
+    <link href="https://jsdelivr.net" rel="stylesheet" />
     <link rel="stylesheet" href="./css/estilos.css" />
     
-    <!-- 🎨 ESTILOS PREMIUM INTERNOS (Arreglan la vista sin depender de librerías externas) -->
     <style>
       body {
         font-family: 'Open Sans', sans-serif;
@@ -19,8 +19,6 @@
         padding: 0;
         color: #212529;
       }
-      
-      /* Cabecera Estilizada y Centrada */
       header {
         background-color: #ffffff;
         padding: 15px 0;
@@ -48,8 +46,6 @@
         margin: 0;
         letter-spacing: -0.5px;
       }
-
-      /* Botón Volver Redondeado */
       .btn-volver {
         text-decoration: none;
         color: #495057;
@@ -65,22 +61,17 @@
         color: #ffffff;
         border-color: #212529;
       }
-
-      /* Contenedor Principal Centrado en el Medio */
       main {
         max-width: 1000px;
         margin: 40px auto;
         padding: 0 20px;
       }
-      
-      /* Tarjeta Flotante Blanca */
       .panel-historial {
         background-color: #ffffff;
         border-radius: 16px;
         padding: 30px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.04);
       }
-      
       .panel-header {
         display: flex;
         justify-content: space-between;
@@ -95,8 +86,6 @@
         font-weight: 700;
         margin: 0;
       }
-
-      /* Botón Actualizar Premium */
       .btn-actualizar {
         background: linear-gradient(135deg, #212529 0%, #343a40 100%);
         color: #ffffff;
@@ -113,8 +102,6 @@
         transform: translateY(-1px);
         box-shadow: 0 6px 15px rgba(0,0,0,0.15);
       }
-
-      /* Estilización Minimalista de la Tabla sin tocar sus datos */
       .table-responsive {
         overflow-x: auto;
         border-radius: 10px;
@@ -146,14 +133,6 @@
       tbody tr:hover {
         background-color: #f1f3f5;
       }
-      
-      /* Badges de estado e ID refinados */
-      .fw-bold.text-primary {
-        color: #2b6cb0 !important;
-      }
-      .text-success.fw-bold {
-        color: #2f855a !important;
-      }
       .badge {
         background-color: #feebc8;
         color: #c05621;
@@ -168,20 +147,24 @@
 </head>
 <body>
 
-    <!-- Encabezado Organizado -->
     <header>
         <div class="header-container">
             <div class="logo-box">
                 <img src="./imagenes/logo.png" alt="Logo de La Perfu" style="height: 50px; width: auto;" />
                 <h1 class="logo-title">La Perfu</h1>
             </div>
-            <a href="index.html" class="btn-volver">
-                <i class="fa-solid fa-arrow-left me-2"></i> Volver a la Tienda
-            </a>
+            <div class="d-flex align-items-center gap-2">
+                <span id="badgeUserPedidos" class="text-muted small fw-semibold me-1"></span>
+                <a href="index.html" class="btn-volver">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Volver a la Tienda
+                </a>
+                <button type="button" onclick="cerrarSesion()" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                    Salir
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- Caja Centralizada -->
     <main>
         <section class="panel-historial">
             <div class="panel-header">
@@ -192,7 +175,7 @@
             </div>
             
             <div class="table-responsive">
-                <table class=""table table-hover align-middle>
+                <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
                             <th>ID Pedido</th>
@@ -206,8 +189,11 @@
                     </thead>
                     <tbody id="tablaPedidosBody">
                         <tr>
-                            <td colspan="6" style="text-center: center; color: #6c757d; padding: 30px;">
-                                Cargando historial desde el servidor...
+                            <td colspan="7" class="text-center py-5">
+                                <div class="spinner-border text-dark" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <div class="text-muted small mt-2">Cargando historial desde el servidor...</div>
                             </td>
                         </tr>
                     </tbody>
@@ -216,7 +202,7 @@
         </section>
     </main>
 
-    <!-- Mantener tu script original intacto -->
-    <script src="./js/pedidos.js"></script>
+    <script src="./js/auth.js?v=3"></script>
+    <script src="./js/pedidos.js?v=3"></script>
 </body>
 </html>

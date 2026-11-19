@@ -24,14 +24,19 @@
       <img src="./imagenes/logo.png" alt="Logo de La Perfu" width="38" height="38" class="rounded-circle object-fit-cover border border-secondary">
       <span>La Perfu <span class="text-warning">| Administración</span></span>
     </a>
-    <div class="d-flex gap-2">
+        <div class="d-flex align-items-center gap-2">
+      <span id="badgeAdminEmail" class="text-light small d-none d-md-inline me-1"></span>
       <a href="pedidos.html" class="btn btn-outline-info btn-sm">
         <i class="fa-solid fa-receipt me-1"></i> Ver Pedidos
       </a>
       <a href="index.html" class="btn btn-outline-light btn-sm">
         <i class="fa-solid fa-store me-1"></i> Ir a la Tienda
       </a>
+      <button type="button" onclick="cerrarSesion()" class="btn btn-outline-danger btn-sm">
+        <i class="fa-solid fa-right-from-bracket me-1"></i> Salir
+      </button>
     </div>
+
   </div>
 </nav>
 
@@ -209,8 +214,11 @@
                   </thead>
                   <tbody id="tablaAdminProductos">
                     <tr>
-                      <td colspan="6" class="text-center py-4 text-muted">
-                        Cargando inventario...
+                      <td colspan="6" class="text-center py-5">
+                        <div class="spinner-border text-dark" role="status">
+                          <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <div class="text-muted small mt-2">Cargando inventario desde el servidor...</div>
                       </td>
                     </tr>
                   </tbody>
@@ -242,11 +250,11 @@
       </div>
     </div>
 
-    <script
-      src="https://jsdelivr.net"
+      <script src="https://jsdelivr.net"
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-      crossorigin="anonymous"
-    ></script>
-    <script src="./js/admin.js?v=2"></script>
+      crossorigin="anonymous"></script>
+    <script src="./js/auth.js?v=3"></script>
+    <script src="./js/admin.js?v=3"></script>
   </body>
 </html>
+

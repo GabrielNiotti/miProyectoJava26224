@@ -101,6 +101,16 @@ function crearCategoria(e) {
 function cargarProductos(url = API_PRODUCTOS) {
   const tbody = document.getElementById('tablaAdminProductos');
   if (!tbody) return;
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="6" class="text-center py-5">
+        <div class="spinner-border text-dark" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <div class="text-muted small mt-2">Cargando inventario desde el servidor...</div>
+      </td>
+    </tr>
+  `;
 
   fetch(url, { headers: getAuthHeaders(false) })
     .then(res => {
@@ -319,6 +329,12 @@ function aplicarFiltros() {
 // 4. INICIALIZACIÓN DE EVENTOS
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
+  const usuario = obtenerUsuarioActual();
+  const badgeEmail = document.getElementById('badgeAdminEmail');
+  if (usuario && badgeEmail) {
+    badgeEmail.textContent = usuario.email;
+  }
+
   cargarCategorias();
   cargarProductos();
 

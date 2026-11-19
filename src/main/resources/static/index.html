@@ -38,13 +38,19 @@
             </h1>
           </div>
 
-          <ul class="menu-principal">
+          <ul class="menu-principal align-items-center">
             <li><a href="#inicio">Inicio</a></li>
             <li><a href="#productos">Productos</a></li>
             <li><a href="#resenias">Reseñas</a></li>
             <li><a href="#contacto">Contacto</a></li>
-            <li><a href="pedidos.html" class="fw-bold text-primary">Ver Pedidos</a></li>
-             <li id="navAdminLink"><a href="admin.html" class="fw-bold text-warning">Administración</a></li>
+            <li id="navPedidosLink" class="d-none"><a href="pedidos.html" class="fw-bold text-info">Ver Pedidos</a></li>
+            <li id="navAuthArea" style="position: relative; z-index: 1000;">
+          <a href="login.html" style="background-color: #ffc107; color: #111 !important; padding: 6px 16px; border-radius: 20px; font-weight: 700; text-decoration: none; display: inline-block;">
+            <i class="fa-solid fa-user me-1"></i> Ingresar
+          </a>
+          </li>
+
+
           </ul>
         </div>
       </nav>
@@ -63,13 +69,16 @@
       <section id="productos" class="grupo-producto">
         
         
-        <div class="container">
-          
-          <div class="contenedorProductos row justify-content-center gap-2 bg-primary w-auto p-3 text-center">
+                  <div class="contenedorProductos row justify-content-center gap-2 bg-primary w-auto p-3 text-center">
             <h2 class="productos">Productos</h2>
-            <!-- Aca insertamos los productos JavaScript -->
+            <div id="spinnerCatalogo" class="col-12 py-5 text-white">
+              <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Cargando catálogo...</span>
+              </div>
+              <div class="small mt-2">Cargando fragancias desde el servidor...</div>
+            </div>
           </div>
-        </div>
+
 
        
       </section>
@@ -367,7 +376,10 @@
       crossorigin="anonymous"
     ></script>
 
-    <script src="./js/script.js"></script>
+    
+
+    <script src="./js/auth.js?v=4"></script>
+    <script src="./js/script.js?v=3"></script>
     
     <script src="js/form.js"></script>
     <script src="js/footer.js"></script>

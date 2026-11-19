@@ -1,18 +1,39 @@
 const API_URL_BASE = 'http://localhost:8080/pedido';
 
-// Función principal que carga los pedidos (acepta una URL opcional para filtros)
+// Guardia de seguridad: exige estar autenticado (USER o ADMIN)
+if (typeof protegerPagina === 'function') {
+  protegerPagina(false);
+}
+
 function cargarHistorialDePedidos(url = API_URL_BASE) {
   const tablaBody = document.getElementById("tablaPedidosBody");
-  const btnActualizar = document.getElementById("btnActualizarPedidos")
+  const btnActualizar = document.getElementById("btnActualizarPedidos");
   if (!tablaBody) return;
+
+  // Mostrar ruedita de carga en la tabla
+  tablaBody.innerHTML = `
+    <tr>
+      <td colspan="7" class="text-center py-5">
+        <div class="spinner-border text-dark" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <div class="text-muted small mt-2">Cargando historial desde el servidor...</div>
+      </td>
+    </tr>
+  `;
 
   if (btnActualizar) {
     btnActualizar.disabled = true;
     btnActualizar.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Actualizando...';
   }
 
-  fetch(url)
+  fetch(url, {
+    headers: typeof getAuthHeaders === 'function' ? getAuthHeaders(false) : {}
+  })
     .then(response => {
+      if (response.status === 403 || response.status === 401) {
+        throw new Error("Tu sesión expiró. Volvé a iniciar sesión.");
+      }
       if (!response.ok) throw new Error("Error al obtener los pedidos del servidor");
       return response.json();
     })
@@ -24,10 +45,11 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
         return;
       }
 
+      const usuarioEsAdmin = typeof esAdmin === 'function' && esAdmin();
+
       pedidos.forEach(ped => {
         const fechaFormateada = new Date(ped.fecha).toLocaleString("es-AR");
 
-        // 1. Armamos la lista visual de perfumes comprados usando los datos del DTO
         let detalleProductosHTML = '<span class="text-muted small">Sin detalle</span>';
         if (ped.items && ped.items.length > 0) {
           detalleProductosHTML = `<ul class="list-unstyled mb-0 small">
@@ -40,7 +62,6 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
           </ul>`;
         }
 
-        // 2. ESTADOS
         let badgeStyle = '';
         let textoBoton = '';
         let proximoEstado = '';
@@ -49,28 +70,29 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
         const estadoNormalizado = ped.estado ? ped.estado.trim().toLowerCase() : "pendiente";
 
         if (estadoNormalizado === "cancelado") {
-          badgeStyle = 'background-color: #fed7d7; color: #9b2c2c;'; // Rojo suave
-          textoBoton = 'Reactivar'; // Permite revertir el estado a PENDIENTE
+          badgeStyle = 'background-color: #fed7d7; color: #9b2c2c;';
+          textoBoton = 'Reactivar';
           proximoEstado = 'PENDIENTE';
         } else if (estadoNormalizado === "pendiente") {
-          badgeStyle = 'background-color: #feebc8; color: #c05621;'; // Naranja
+          badgeStyle = 'background-color: #feebc8; color: #c05621;';
           textoBoton = 'Preparar';
           proximoEstado = 'EN_PROCESO';
           botonCancelar = `<button type="button" class="btn-cancelar-pedido" data-id="${ped.id}" style="background-color: #dc3545; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; font-weight: 600; margin-left: 6px;">Cancelar</button>`;
         } else if (estadoNormalizado === "en_proceso" || estadoNormalizado === "en proceso") {
-          badgeStyle = 'background-color: #e2e8f0; color: #4a5568;'; // Gris / Azulado
+          badgeStyle = 'background-color: #e2e8f0; color: #4a5568;';
           textoBoton = 'Entregar';
           proximoEstado = 'REALIZADO';
           botonCancelar = `<button type="button" class="btn-cancelar-pedido" data-id="${ped.id}" style="background-color: #dc3545; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; font-weight: 600; margin-left: 6px;">Cancelar</button>`;
         } else {
-          badgeStyle = 'background-color: #c6f6d5; color: #22543d;'; // Verde (REALIZADO)
+          badgeStyle = 'background-color: #c6f6d5; color: #22543d;';
           textoBoton = 'Resetear';
           proximoEstado = 'PENDIENTE';
         }
 
-        const botonAccion = `<button type="button" class="btn-cambiar-estado" data-id="${ped.id}" data-estado="${proximoEstado}" style="background-color: #212529; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; font-weight: 600; margin-left: 8px;">${textoBoton}</button>`;
+        const controlesAdmin = usuarioEsAdmin
+          ? `<button type="button" class="btn-cambiar-estado" data-id="${ped.id}" data-estado="${proximoEstado}" style="background-color: #212529; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; font-weight: 600; margin-left: 8px;">${textoBoton}</button>${botonCancelar}`
+          : '';
 
-        // 3. Renderizamos la fila completa
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="fw-bold text-primary">#${ped.id}</td>
@@ -80,10 +102,9 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
           <td>${ped.cuotas > 1 ? ped.cuotas + ' cuotas' : '1 pago'}</td>
           <td class="text-success fw-bold">${ped.total.toLocaleString("es-AR", { style: "currency", currency: "ARS" })}</td>
           <td>
-            <div style="display: flex; flex-wrap; align-items: center; gap: 6px;">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px;">
               <span class="badge" style="${badgeStyle}">${ped.estado}</span>
-              ${botonAccion}
-              ${botonCancelar}
+              ${controlesAdmin}
             </div>
           </td>
         `;
@@ -92,43 +113,49 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
     })
     .catch(error => {
       console.error("Error en el fetch de pedidos:", error);
-      tablaBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-3">Error de conexión con el servidor. Verificá que Spring Boot esté activo.</td></tr>`;
+      tablaBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-3">${error.message}</td></tr>`;
     })
     .finally(() => {
-      if(btnActualizar) {
+      if (btnActualizar) {
         btnActualizar.disabled = false;
         btnActualizar.innerHTML = 'Actualizar Lista <i class="fa-solid fa-rotate ms-1"></i>';
-      
       }
     });
 }
 
-// Función para actualizar el estado en MySQL
 function cambiarEstadoPedido(id, nuevoEstado) {
   fetch(`${API_URL_BASE}/${id}/estado?nuevoEstado=${nuevoEstado}`, {
-    method: 'PUT'
+    method: 'PUT',
+    headers: typeof getAuthHeaders === 'function' ? getAuthHeaders(false) : {}
   })
-  .then(response => {
-    if (!response.ok) throw new Error("No se pudo actualizar el estado");
-    return response.json();
-  })
-  .then(() => {
-    // Si hay un filtro activo en pantalla, respetamos ese filtro al recargar
-    const filtroSelect = document.getElementById("filtroEstadoPedido");
-    if (filtroSelect && filtroSelect.value !== "TODOS") {
-      cargarHistorialDePedidos(`${API_URL_BASE}/filtrar/estado?estado=${filtroSelect.value}`);
-    } else {
-      cargarHistorialDePedidos();
-    }
-  })
-  .catch(error => {
-    console.error("Error al actualizar:", error);
-    alert("No se pudo cambiar el estado del pedido");
-  });
+    .then(async response => {
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || "No se pudo actualizar el estado");
+      }
+      return response.json();
+    })
+    .then(() => {
+      const filtroSelect = document.getElementById("filtroEstadoPedido");
+      if (filtroSelect && filtroSelect.value !== "TODOS") {
+        cargarHistorialDePedidos(`${API_URL_BASE}/filtrar/estado?estado=${filtroSelect.value}`);
+      } else {
+        cargarHistorialDePedidos();
+      }
+    })
+    .catch(error => {
+      console.error("Error al actualizar:", error);
+      alert(error.message);
+    });
 }
 
-// Inicialización y captura de eventos
 window.addEventListener("DOMContentLoaded", () => {
+  const usuario = typeof obtenerUsuarioActual === 'function' ? obtenerUsuarioActual() : null;
+  const badgeUser = document.getElementById("badgeUserPedidos");
+  if (usuario && badgeUser) {
+    badgeUser.textContent = usuario.email;
+  }
+
   cargarHistorialDePedidos();
 
   const btnActualizar = document.getElementById("btnActualizarPedidos");
@@ -140,7 +167,6 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Listener opcional por si agregás un <select id="filtroEstadoPedido"> en tu HTML
   const filtroSelect = document.getElementById("filtroEstadoPedido");
   if (filtroSelect) {
     filtroSelect.addEventListener("change", (e) => {
@@ -153,7 +179,6 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Delegación de eventos para los botones de estado en la tabla
   const tablaBody = document.getElementById("tablaPedidosBody");
   if (tablaBody) {
     tablaBody.addEventListener("click", (e) => {
@@ -168,7 +193,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (confirm(`¿Estás seguro de que querés cancelar el pedido #${idPedido}?`)) {
           cambiarEstadoPedido(idPedido, "CANCELADO");
         }
-      } 
+      }
     });
   }
 });

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión | La Perfu</title>
+  <link rel="icon" href="./imagenes/logo.png" type="image/png" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      color: #212529;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background-color: #111418;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    .brand img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #495057;
+    }
+    .btn-tienda {
+      text-decoration: none;
+      color: #fff;
+      border: 1px solid #adb5bd;
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .btn-tienda:hover {
+      background-color: #fff;
+      color: #111418;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 16px;
+    }
+    .card-auth {
+      background: #ffffff;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 16px;
+      padding: 36px 32px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .card-header-logo {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .card-header-logo img {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+    .card-header-logo h2 {
+      font-size: 1.45rem;
+      color: #111418;
+      margin-bottom: 4px;
+    }
+    .card-header-logo p {
+      font-size: 0.88rem;
+      color: #6c757d;
+    }
+    .tabs {
+      display: flex;
+      background-color: #f1f3f5;
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 9px;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #495057;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .tab-btn.active {
+      background-color: #563d7c;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(86,61,124,0.3);
+    }
+    .alerta {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .alerta.error {
+      display: block;
+      background-color: #f8d7da;
+      color: #842029;
+      border: 1px solid #f5c2c7;
+    }
+    .alerta.exito {
+      display: block;
+      background-color: #d1e7dd;
+      color: #0f5132;
+      border: 1px solid #badbcc;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #343a40;
+    }
+    input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      border-color: #563d7c;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: 0.2s;
+    }
+    .btn-login {
+      background-color: #111418;
+      color: #ffffff;
+    }
+    .btn-login:hover { background-color: #2b3035; }
+    .btn-register {
+      background-color: #ffc107;
+      color: #111418;
+    }
+    .btn-register:hover { background-color: #e0a800; }
+    .oculto { display: none; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a class="brand" href="index.html">
+      <img src="./imagenes/logo.png" alt="Logo La Perfu">
+      <span>La Perfu</span>
+    </a>
+    <a href="index.html" class="btn-tienda">← Volver a la Tienda</a>
+  </header>
+
+  <main>
+    <div class="card-auth">
+      <div class="card-header-logo">
+        <img src="./imagenes/logo.png" alt="La Perfu">
+        <h2>Bienvenido a La Perfu</h2>
+        <p>Ingresá a tu cuenta para comprar o gestionar el catálogo</p>
+      </div>
+
+      <div class="tabs">
+        <button type="button" class="tab-btn active" id="btnTabLogin" onclick="mostrarPestana('login')">Iniciar Sesión</button>
+        <button type="button" class="tab-btn" id="btnTabRegister" onclick="mostrarPestana('register')">Registrarse</button>
+      </div>
+
+      <div id="authAlert" class="alerta"></div>
+
+      <!-- FORMULARIO INICIAR SESIÓN -->
+      <form id="formLogin">
+        <div class="form-group">
+          <label for="loginEmail">Correo electrónico</label>
+          <input type="email" id="loginEmail" placeholder="ejemplo@mail.com" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Contraseña</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-submit btn-login">Ingresar</button>
+      </form>
+
+      <!-- FORMULARIO REGISTRO -->
+      <form id="formRegister" class="oculto">
+        <div class="form-group">
+          <label for="regEmail">Correo electrónico</label>
+          <input type="email" id="regEmail" placeholder="tuemail@mail.com" required>
+        </div>
+        <div class="form-group">
+          <label for="regPassword">Contraseña</label>
+          <input type="password" id="regPassword" placeholder="Creá una contraseña" required>
+        </div>
+        <button type="submit" class="btn-submit btn-register">Crear Cuenta</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="./js/auth.js?v=4"></script>
+  <script>
+    const API_AUTH = 'http://localhost:8080/auth';
+    const authAlert = document.getElementById('authAlert');
+
+    function mostrarPestana(tipo) {
+      authAlert.className = 'alerta';
+      const formLogin = document.getElementById('formLogin');
+      const formRegister = document.getElementById('formRegister');
+      const btnLogin = document.getElementById('btnTabLogin');
+      const btnRegister = document.getElementById('btnTabRegister');
+
+      if (tipo === 'login') {
+        formLogin.classList.remove('oculto');
+        formRegister.classList.add('oculto');
+        btnLogin.classList.add('active');
+        btnRegister.classList.remove('active');
+      } else {
+        formLogin.classList.add('oculto');
+        formRegister.classList.remove('oculto');
+        btnLogin.classList.remove('active');
+        btnRegister.classList.add('active');
+      }
+    }
+
+    function mostrarAlertaAuth(mensaje, esExito) {
+      authAlert.textContent = mensaje;
+      authAlert.className = esExito ? 'alerta exito' : 'alerta error';
+    }
+
+    const sesionExistente = obtenerUsuarioActual();
+    if (sesionExistente) {
+      window.location.href = sesionExistente.rol === 'ADMIN' ? 'admin.html' : 'index.html';
+    }
+
+    document.getElementById('formLogin').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      authAlert.className = 'alerta';
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch(API_AUTH + '/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Email o contraseña incorrectos.');
+
+        guardarSesion(data.token, data.email, data.rol);
+        mostrarAlertaAuth('¡Bienvenido! Redirigiendo...', true);
+
+        setTimeout(() => {
+          window.location.href = data.rol === 'ADMIN' ? 'admin.html' : 'index.html';
+        }, 600);
+      } catch (err) {
+        mostrarAlertaAuth(err.message, false);
+      }
+    });
+
+    document.getElementById('formRegister').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      authAlert.className = 'alerta';
+
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+
+      try {
+        const res = await fetch(API_AUTH + '/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'No se pudo registrar el usuario.');
+
+        mostrarAlertaAuth('¡Cuenta creada con éxito! Ahora iniciá sesión.', true);
+        document.getElementById('formRegister').reset();
+        document.getElementById('loginEmail').value = email;
+        mostrarPestana('login');
+      } catch (err) {
+        mostrarAlertaAuth(err.message, false);
+      }
+    });
+  </script>
+</body>
+</html>
