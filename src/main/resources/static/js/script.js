@@ -54,20 +54,33 @@ function insertarProductos(lista) {
 
   contenedorProductos.innerHTML = '<h2 class="productos w-100">Productos</h2>';
 
-  for (const { id, img, nombre, descripcion, precio, stock } of lista) {
+  for (const { id, img, nombre, descripcion, precio, stock, categoria } of lista) {
     const imagenFinal = img ? img : 'logo.png';
-    const sinStock = stock !== undefined && stock <= 0;
+    const srcImagen = (imagenFinal.startsWith('http://') || imagenFinal.startsWith('https://'))
+      ? imagenFinal
+      : './imagenes/' + imagenFinal;
+
+    const stockNum = stock !== undefined && stock !== null ? stock : 0;
+    const sinStock = stockNum <= 0;
     const descTexto = descripcion || 'Fragancia exclusiva de La Perfu.';
+    const nombreCategoria = categoria && categoria.nombre ? categoria.nombre : 'General';
     const precioFormateado = precio.toLocaleString("es-AR", { style: "currency", currency: "ARS" });
     const claseBoton = sinStock ? 'btn-secondary' : 'btn-dark';
     const attrDisabled = sinStock ? 'disabled' : '';
     const textoBoton = sinStock ? 'Sin stock' : 'Agregar al carrito';
+    const textoStock = sinStock
+      ? '<span class="badge bg-danger">Sin stock (0 un.)</span>'
+      : '<span class="badge bg-success-subtle text-success border border-success-subtle">Stock: ' + stockNum + ' un.</span>';
 
     const nuevoElemento = document.createElement("div");
     nuevoElemento.className = "card col-10 col-sm-5 col-lg-3 m-2";
     nuevoElemento.innerHTML =
-      '<img src="./imagenes/' + imagenFinal + '" onerror="this.src=\'./imagenes/logo.png\'" class="card-img-top" alt="' + nombre + '">' +
+      '<img src="' + srcImagen + '" onerror="this.src=\'./imagenes/logo.png\'" class="card-img-top" alt="' + nombre + '">' +
       '<div class="card-body text-center">' +
+        '<div class="d-flex justify-content-between align-items-center mb-2">' +
+          '<span class="badge text-bg-light border text-secondary">#' + id + '</span>' +
+          '<span class="badge text-bg-light border text-dark">' + nombreCategoria + '</span>' +
+        '</div>' +
         '<h5 class="card-title">' + nombre + '</h5>' +
         '<p class="m-0">' +
           '<a class="link-info link-opacity-50-hover link-underline-opacity-0" href="#." data-descripcion="' + descTexto + '">' +
@@ -75,7 +88,8 @@ function insertarProductos(lista) {
           '</a>' +
         '</p>' +
         '<div class="descripcion"></div>' +
-        '<p class="card-text text-danger fs-3 mt-2">' + precioFormateado + '</p>' +
+        '<p class="card-text text-danger fs-3 mt-2 mb-1">' + precioFormateado + '</p>' +
+        '<div class="mb-3">' + textoStock + '</div>' +
         '<button type="button" class="btn ' + claseBoton + ' pb-2 btn-agregar-carrito" data-id="' + id + '" ' + attrDisabled + '>' +
           textoBoton +
         '</button>' +
@@ -83,6 +97,7 @@ function insertarProductos(lista) {
     contenedorProductos.appendChild(nuevoElemento);
   }
 }
+
 
 function mostrarDescripcion(datosEvento) {
   if (datosEvento.target.tagName === "A") {
@@ -196,12 +211,17 @@ function actualizarProductoHTML(producto) {
 function agregarAlCarrito(datosEvento) {
   if (datosEvento.target.classList.contains("btn-agregar-carrito")) {
     const idProducto = parseInt(datosEvento.target.dataset.id);
+    const productoEncontrado = buscarProductoPorId(idProducto, productos);
+    if (!productoEncontrado) return;
+
+    if (productoEncontrado.stock <= 0) {
+      alert("Lo sentimos, este producto ya no tiene stock disponible.");
+      return;
+    }
+
     const idEncontrado = buscarEnLista(idProducto, listaProductosCarrito);
 
     if (idEncontrado === -1) {
-      const productoEncontrado = buscarProductoPorId(idProducto, productos);
-      if (!productoEncontrado) return;
-
       const prodCarrito = {
         id: productoEncontrado.id,
         nombre: productoEncontrado.nombre,
@@ -213,6 +233,10 @@ function agregarAlCarrito(datosEvento) {
       insertarProductoHTML(prodCarrito);
     } else {
       const producto = listaProductosCarrito.find(p => p.id === idProducto);
+      if (producto.cantidad >= productoEncontrado.stock) {
+        alert("Alcanzaste el stock máximo disponible de " + producto.nombre + " (" + productoEncontrado.stock + " un.).");
+        return;
+      }
       producto.cantidad++;
       actualizarProductoHTML(producto);
     }
@@ -221,6 +245,44 @@ function agregarAlCarrito(datosEvento) {
     guardarCarritoEnStorage(listaProductosCarrito);
   }
 }
+function agregarAlCarrito(datosEvento) {
+  if (datosEvento.target.classList.contains("btn-agregar-carrito")) {
+    const idProducto = parseInt(datosEvento.target.dataset.id);
+    const productoEncontrado = buscarProductoPorId(idProducto, productos);
+    if (!productoEncontrado) return;
+
+    if (productoEncontrado.stock <= 0) {
+      alert("Lo sentimos, este producto ya no tiene stock disponible.");
+      return;
+    }
+
+    const idEncontrado = buscarEnLista(idProducto, listaProductosCarrito);
+
+    if (idEncontrado === -1) {
+      const prodCarrito = {
+        id: productoEncontrado.id,
+        nombre: productoEncontrado.nombre,
+        precio: productoEncontrado.precio,
+        cantidad: 1
+      };
+
+      listaProductosCarrito.push(prodCarrito);
+      insertarProductoHTML(prodCarrito);
+    } else {
+      const producto = listaProductosCarrito.find(p => p.id === idProducto);
+      if (producto.cantidad >= productoEncontrado.stock) {
+        alert("Alcanzaste el stock máximo disponible de " + producto.nombre + " (" + productoEncontrado.stock + " un.).");
+        return;
+      }
+      producto.cantidad++;
+      actualizarProductoHTML(producto);
+    }
+    actualizarContador();
+    actualizarTotal();
+    guardarCarritoEnStorage(listaProductosCarrito);
+  }
+}
+
 
 // =================================================================
 // 4. CHECKOUT, FINANCIACIÓN Y ENVÍO DE PEDIDO CON TOKEN JWT
@@ -375,9 +437,17 @@ listaCarrito.addEventListener("click", function (e) {
 const id = parseInt(e.target.dataset.id);
 if (!id) return;
 const producto = listaProductosCarrito.find((p) => p.id === id);
-if (e.target.classList.contains("sumar")) {
-producto.cantidad++;
-}
+      if (e.target.classList.contains("sumar")) {
+        const productoCatalogo = buscarProductoPorId(id, productos);
+        const stockMaximo = productoCatalogo ? productoCatalogo.stock : 999;
+
+        if (producto.cantidad >= stockMaximo) {
+          alert("No podés agregar más unidades. Stock disponible de " + producto.nombre + ": " + stockMaximo + " un.");
+          return;
+        }
+        producto.cantidad++;
+      }
+
 if (e.target.classList.contains("restar")) {
 producto.cantidad--;
 if (producto.cantidad === 0) {
