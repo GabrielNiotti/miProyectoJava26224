@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Perfu - Listado de Pedidos</title>
+    <link rel="icon" href="./imagenes/logo.png" type="image/png" />
     <link rel="preconnect" href="https://googleapis.com" />
     <link rel="preconnect" href="https://gstatic.com" crossorigin />
     <link href="https://googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
@@ -62,7 +63,7 @@
         border-color: #212529;
       }
       main {
-        max-width: 1000px;
+        max-width: 1100px;
         margin: 40px auto;
         padding: 0 20px;
       }
@@ -179,6 +180,7 @@
                     <thead>
                         <tr>
                             <th>ID Pedido</th>
+                            <th>Cliente</th>
                             <th>Fecha y Hora</th>
                             <th>Productos</th>
                             <th>Método de Pago</th>
@@ -189,7 +191,7 @@
                     </thead>
                     <tbody id="tablaPedidosBody">
                         <tr>
-                            <td colspan="7" class="text-center py-5">
+                            <td colspan="8" class="text-center py-5">
                                 <div class="spinner-border text-dark" role="status">
                                     <span class="visually-hidden">Cargando...</span>
                                 </div>
@@ -202,7 +204,7 @@
         </section>
     </main>
 
-    <script src="./js/auth.js?v=3"></script>
-    <script src="./js/pedidos.js?v=3"></script>
+    <script src="./js/auth.js?v=5"></script>
+    <script src="./js/pedidos.js?v=5"></script>
 </body>
 </html>

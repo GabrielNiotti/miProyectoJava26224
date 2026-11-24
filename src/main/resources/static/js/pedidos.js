@@ -1,6 +1,5 @@
 const API_URL_BASE = 'http://localhost:8080/pedido';
 
-// Guardia de seguridad: exige estar autenticado (USER o ADMIN)
 if (typeof protegerPagina === 'function') {
   protegerPagina(false);
 }
@@ -10,17 +9,15 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
   const btnActualizar = document.getElementById("btnActualizarPedidos");
   if (!tablaBody) return;
 
-  // Mostrar ruedita de carga en la tabla
-  tablaBody.innerHTML = `
-    <tr>
-      <td colspan="7" class="text-center py-5">
-        <div class="spinner-border text-dark" role="status">
-          <span class="visually-hidden">Cargando...</span>
-        </div>
-        <div class="text-muted small mt-2">Cargando historial desde el servidor...</div>
-      </td>
-    </tr>
-  `;
+  tablaBody.innerHTML =
+    '<tr>' +
+      '<td colspan="8" class="text-center py-5">' +
+        '<div class="spinner-border text-dark" role="status">' +
+          '<span class="visually-hidden">Cargando...</span>' +
+        '</div>' +
+        '<div class="text-muted small mt-2">Cargando historial desde el servidor...</div>' +
+      '</td>' +
+    '</tr>';
 
   if (btnActualizar) {
     btnActualizar.disabled = true;
@@ -41,7 +38,7 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
       tablaBody.innerHTML = "";
 
       if (pedidos.length === 0) {
-        tablaBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">No hay pedidos registrados para mostrar.</td></tr>`;
+        tablaBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">No hay pedidos registrados para mostrar.</td></tr>';
         return;
       }
 
@@ -52,14 +49,11 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
 
         let detalleProductosHTML = '<span class="text-muted small">Sin detalle</span>';
         if (ped.items && ped.items.length > 0) {
-          detalleProductosHTML = `<ul class="list-unstyled mb-0 small">
-            ${ped.items.map(item => `
-              <li>
-                <strong>${item.cantidad}x</strong> ${item.nombreProducto} 
-                <span class="text-muted">($${item.precioUnitario.toLocaleString("es-AR")})</span>
-              </li>
-            `).join('')}
-          </ul>`;
+          const itemsLi = ped.items.map(item =>
+            '<li><strong>' + item.cantidad + 'x</strong> ' + item.nombreProducto +
+            ' <span class="text-muted">($' + item.precioUnitario.toLocaleString("es-AR") + ')</span></li>'
+          ).join('');
+          detalleProductosHTML = '<ul class="list-unstyled mb-0 small">' + itemsLi + '</ul>';
         }
 
         let badgeStyle = '';
@@ -77,12 +71,12 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
           badgeStyle = 'background-color: #feebc8; color: #c05621;';
           textoBoton = 'Preparar';
           proximoEstado = 'EN_PROCESO';
-          botonCancelar = `<button type="button" class="btn-cancelar-pedido" data-id="${ped.id}" style="background-color: #dc3545; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; font-weight: 600; margin-left: 6px;">Cancelar</button>`;
+          botonCancelar = '<button type="button" class="btn-cancelar-pedido" data-id="' + ped.id + '" style="background-color: #dc3545; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; font-weight: 600; margin-left: 6px;">Cancelar</button>';
         } else if (estadoNormalizado === "en_proceso" || estadoNormalizado === "en proceso") {
           badgeStyle = 'background-color: #e2e8f0; color: #4a5568;';
           textoBoton = 'Entregar';
           proximoEstado = 'REALIZADO';
-          botonCancelar = `<button type="button" class="btn-cancelar-pedido" data-id="${ped.id}" style="background-color: #dc3545; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; font-weight: 600; margin-left: 6px;">Cancelar</button>`;
+          botonCancelar = '<button type="button" class="btn-cancelar-pedido" data-id="' + ped.id + '" style="background-color: #dc3545; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; font-weight: 600; margin-left: 6px;">Cancelar</button>';
         } else {
           badgeStyle = 'background-color: #c6f6d5; color: #22543d;';
           textoBoton = 'Resetear';
@@ -90,30 +84,34 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
         }
 
         const controlesAdmin = usuarioEsAdmin
-          ? `<button type="button" class="btn-cambiar-estado" data-id="${ped.id}" data-estado="${proximoEstado}" style="background-color: #212529; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; font-weight: 600; margin-left: 8px;">${textoBoton}</button>${botonCancelar}`
+          ? '<button type="button" class="btn-cambiar-estado" data-id="' + ped.id + '" data-estado="' + proximoEstado + '" style="background-color: #212529; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; font-weight: 600; margin-left: 8px;">' + textoBoton + '</button>' + botonCancelar
           : '';
 
+        const textoCuotas = ped.cuotas > 1 ? ped.cuotas + ' cuotas' : '1 pago';
+        const totalFormateado = ped.total.toLocaleString("es-AR", { style: "currency", currency: "ARS" });
+        const clienteEmail = ped.usuarioEmail || 'Sin asignar';
+
         const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td class="fw-bold text-primary">#${ped.id}</td>
-          <td>${fechaFormateada}</td>
-          <td>${detalleProductosHTML}</td>
-          <td class="text-capitalize">${ped.metodoPago}</td>
-          <td>${ped.cuotas > 1 ? ped.cuotas + ' cuotas' : '1 pago'}</td>
-          <td class="text-success fw-bold">${ped.total.toLocaleString("es-AR", { style: "currency", currency: "ARS" })}</td>
-          <td>
-            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px;">
-              <span class="badge" style="${badgeStyle}">${ped.estado}</span>
-              ${controlesAdmin}
-            </div>
-          </td>
-        `;
+        tr.innerHTML =
+          '<td class="fw-bold text-primary">#' + ped.id + '</td>' +
+          '<td><span class="badge bg-light text-dark border" style="text-transform: none;">' + clienteEmail + '</span></td>' +
+          '<td>' + fechaFormateada + '</td>' +
+          '<td>' + detalleProductosHTML + '</td>' +
+          '<td class="text-capitalize">' + ped.metodoPago + '</td>' +
+          '<td>' + textoCuotas + '</td>' +
+          '<td class="text-success fw-bold">' + totalFormateado + '</td>' +
+          '<td>' +
+            '<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px;">' +
+              '<span class="badge" style="' + badgeStyle + '">' + ped.estado + '</span>' +
+              controlesAdmin +
+            '</div>' +
+          '</td>';
         tablaBody.appendChild(tr);
       });
     })
     .catch(error => {
       console.error("Error en el fetch de pedidos:", error);
-      tablaBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-3">${error.message}</td></tr>`;
+      tablaBody.innerHTML = '<tr><td colspan="8" class="text-center text-danger py-3">' + error.message + '</td></tr>';
     })
     .finally(() => {
       if (btnActualizar) {
@@ -124,7 +122,7 @@ function cargarHistorialDePedidos(url = API_URL_BASE) {
 }
 
 function cambiarEstadoPedido(id, nuevoEstado) {
-  fetch(`${API_URL_BASE}/${id}/estado?nuevoEstado=${nuevoEstado}`, {
+  fetch(API_URL_BASE + '/' + id + '/estado?nuevoEstado=' + nuevoEstado, {
     method: 'PUT',
     headers: typeof getAuthHeaders === 'function' ? getAuthHeaders(false) : {}
   })
@@ -138,7 +136,7 @@ function cambiarEstadoPedido(id, nuevoEstado) {
     .then(() => {
       const filtroSelect = document.getElementById("filtroEstadoPedido");
       if (filtroSelect && filtroSelect.value !== "TODOS") {
-        cargarHistorialDePedidos(`${API_URL_BASE}/filtrar/estado?estado=${filtroSelect.value}`);
+        cargarHistorialDePedidos(API_URL_BASE + '/filtrar/estado?estado=' + filtroSelect.value);
       } else {
         cargarHistorialDePedidos();
       }
@@ -174,7 +172,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (estadoSeleccionado === "TODOS") {
         cargarHistorialDePedidos();
       } else {
-        cargarHistorialDePedidos(`${API_URL_BASE}/filtrar/estado?estado=${estadoSeleccionado}`);
+        cargarHistorialDePedidos(API_URL_BASE + '/filtrar/estado?estado=' + estadoSeleccionado);
       }
     });
   }
@@ -190,7 +188,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
       if (e.target.classList.contains("btn-cancelar-pedido")) {
         const idPedido = e.target.dataset.id;
-        if (confirm(`¿Estás seguro de que querés cancelar el pedido #${idPedido}?`)) {
+        if (confirm("¿Estás seguro de que querés cancelar el pedido #" + idPedido + "?")) {
           cambiarEstadoPedido(idPedido, "CANCELADO");
         }
       }

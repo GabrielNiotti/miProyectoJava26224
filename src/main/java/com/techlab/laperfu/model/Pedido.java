@@ -22,31 +22,31 @@ public class Pedido {
     @Column(nullable = false)
     private String estado;
 
-    
     @Column(name = "metodo_pago", nullable = false)
     private String metodoPago;
 
     @Column(nullable = false)
     private Integer cuotas;
 
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties("pedido") 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties("pedido")
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DetallePedido> detalles;
 
-    // Constructor Vacío. Evita errores de JPA
     public Pedido() {
     }
 
-    // Método que corre automáticamente antes de guardar el pedido en MySQL
     @PrePersist
     protected void onCreate() {
         this.fecha = LocalDateTime.now();
         if (this.estado == null) {
-            this.estado = "pendiente";
+            this.estado = "PENDIENTE";
         }
     }
-    // GETTERS Y SETTERS
-    
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -65,7 +65,9 @@ public class Pedido {
     public Integer getCuotas() { return cuotas; }
     public void setCuotas(Integer cuotas) { this.cuotas = cuotas; }
 
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+
     public List<DetallePedido> getDetalles() { return detalles; }
     public void setDetalles(List<DetallePedido> detalles) { this.detalles = detalles; }
 }
-

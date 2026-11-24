@@ -8,9 +8,11 @@ import com.techlab.laperfu.model.Pedido;
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
-    // 1. Filtra los pedidos por su estado actual (ignorando mayúsculas/minúsculas)
     List<Pedido> findByEstadoIgnoreCase(String estado);
 
-    // 2. Filtra los pedidos según cómo pagó el cliente (ej: "efectivo", "tarjeta")
     List<Pedido> findByMetodoPagoIgnoreCase(String metodoPago);
+
+    List<Pedido> findByUsuarioEmailOrderByFechaDesc(String email);
+
+    List<Pedido> findAllByOrderByFechaDesc();
 }

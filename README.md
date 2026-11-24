@@ -58,8 +58,11 @@ CREATE TABLE IF NOT EXISTS pedido (
     metodo_pago VARCHAR(100) NOT NULL,
     cuotas INT NOT NULL,
     estado VARCHAR(50) NOT NULL,
-    PRIMARY KEY (id)
+    usuario_id BIGINT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_pedido_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(id)
 );
+
 
 CREATE TABLE IF NOT EXISTS detalle_pedido (
     id BIGINT NOT NULL AUTO_INCREMENT,

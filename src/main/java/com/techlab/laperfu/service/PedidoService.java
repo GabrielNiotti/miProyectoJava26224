@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,29 +19,31 @@ import com.techlab.laperfu.exception.StockInsuficienteException;
 import com.techlab.laperfu.model.DetallePedido;
 import com.techlab.laperfu.model.Pedido;
 import com.techlab.laperfu.model.Producto;
+import com.techlab.laperfu.model.Usuario;
 import com.techlab.laperfu.repository.PedidoRepository;
 import com.techlab.laperfu.repository.ProductoRepository;
+import com.techlab.laperfu.repository.UsuarioRepository;
 
 @Service
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
     private final ProductoRepository productoRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Autowired
-    public PedidoService(PedidoRepository pedidoRepository, ProductoRepository productoRepository) {
+    public PedidoService(PedidoRepository pedidoRepository, ProductoRepository productoRepository, UsuarioRepository usuarioRepository) {
         this.pedidoRepository = pedidoRepository;
         this.productoRepository = productoRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    // POST /pedido (Lógica profesional en 2 pasos: Validar todo -> Guardar y descontar stock)
     @Transactional
     public Pedido crearPedido(PedidoDTO pedidoDTO) {
         if (pedidoDTO.getItems() == null || pedidoDTO.getItems().isEmpty()) {
             throw new IllegalArgumentException("El pedido debe contener al menos un producto.");
         }
 
-        // --- PASO 1: Validar TODAS las líneas sin tocar la base de datos ---
         List<Producto> productosValidados = new ArrayList<>();
         List<Long> idsVistos = new ArrayList<>();
 
@@ -63,11 +67,17 @@ public class PedidoService {
             productosValidados.add(producto);
         }
 
-        // --- PASO 2: Todo es válido -> Guardamos pedido, detalles y descontamos stock ---
         Pedido pedido = new Pedido();
         pedido.setTotal(pedidoDTO.getTotal());
         pedido.setMetodoPago(pedidoDTO.getMetodoPago());
         pedido.setCuotas(pedidoDTO.getCuotas());
+
+        // Asociamos el pedido al usuario autenticado mediante el token JWT
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Usuario usuarioActual = usuarioRepository.findByEmail(auth.getName()).orElse(null);
+            pedido.setUsuario(usuarioActual);
+        }
 
         List<DetallePedido> detalles = new ArrayList<>();
 
@@ -75,7 +85,6 @@ public class PedidoService {
             Producto producto = productosValidados.get(i);
             PedidoDTO.ItemCarritoDTO itemDTO = pedidoDTO.getItems().get(i);
 
-            // Descontamos stock real en MySQL
             producto.setStock(producto.getStock() - itemDTO.getCantidad());
             productoRepository.save(producto);
 
@@ -91,12 +100,10 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
 
-    // PUT /pedido/{id}/estado (Actualiza estado y gestiona devolución/descuento de stock si se cancela o reactiva)
-        @Transactional
+    @Transactional
     public String actualizarEstado(Long id, String nuevoEstado) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new PedidoNoEncontradoException("Pedido no encontrado con ID: " + id));
-
 
         String estadoAnterior = pedido.getEstado();
         String estadoUpper = nuevoEstado.toUpperCase();
@@ -106,7 +113,6 @@ public class PedidoService {
             throw new IllegalArgumentException("Estado no válido. Use: PENDIENTE, EN_PROCESO, REALIZADO o CANCELADO.");
         }
 
-        // Si el pedido se CANCELA (y antes no estaba cancelado), devolvemos el stock a cada producto
         if (estadoUpper.equals("CANCELADO") && !"CANCELADO".equals(estadoAnterior) && pedido.getDetalles() != null) {
             for (DetallePedido det : pedido.getDetalles()) {
                 Producto prod = det.getProducto();
@@ -115,7 +121,6 @@ public class PedidoService {
             }
         }
 
-        // Si un pedido CANCELADO se vuelve a REACTIVAR (ej. a PENDIENTE), volvemos a descontar el stock
         if (!estadoUpper.equals("CANCELADO") && "CANCELADO".equals(estadoAnterior) && pedido.getDetalles() != null) {
             for (DetallePedido det : pedido.getDetalles()) {
                 Producto prod = det.getProducto();
@@ -133,7 +138,15 @@ public class PedidoService {
     }
 
     public List<PedidoConsultaDTO> listarTodos() {
-        return pedidoRepository.findAll().stream().map(this::mapearADTO).toList();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean esAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        List<Pedido> pedidos = esAdmin
+                ? pedidoRepository.findAllByOrderByFechaDesc()
+                : pedidoRepository.findByUsuarioEmailOrderByFechaDesc(auth != null ? auth.getName() : "");
+
+        return pedidos.stream().map(this::mapearADTO).toList();
     }
 
     public List<PedidoConsultaDTO> filtrarPorEstado(String estado) {
@@ -154,6 +167,8 @@ public class PedidoService {
                 )).toList()
                 : Collections.emptyList();
 
+        String emailCliente = (ped.getUsuario() != null) ? ped.getUsuario().getEmail() : "Sin asignar";
+
         return new PedidoConsultaDTO(
                 ped.getId(),
                 ped.getFecha(),
@@ -161,14 +176,14 @@ public class PedidoService {
                 ped.getCuotas(),
                 ped.getTotal(),
                 ped.getEstado(),
+                emailCliente,
                 itemsDTO
         );
     }
 
-        public PedidoConsultaDTO obtenerPorId(Long id) {
+    public PedidoConsultaDTO obtenerPorId(Long id) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new PedidoNoEncontradoException("Pedido no encontrado con ID: " + id));
         return mapearADTO(pedido);
     }
-
 }

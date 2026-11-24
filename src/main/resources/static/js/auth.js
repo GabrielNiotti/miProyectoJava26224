@@ -9,13 +9,13 @@ const AUTH_KEYS = {
 };
 
 function guardarSesion(token, email, rol) {
-  localStorage.setItem(AUTH_KEYS.TOKEN, token);
-  localStorage.setItem(AUTH_KEYS.EMAIL, email);
-  localStorage.setItem(AUTH_KEYS.ROL, rol);
+  sessionStorage.setItem(AUTH_KEYS.TOKEN, token);
+  sessionStorage.setItem(AUTH_KEYS.EMAIL, email);
+  sessionStorage.setItem(AUTH_KEYS.ROL, rol);
 }
 
 function obtenerToken() {
-  return localStorage.getItem(AUTH_KEYS.TOKEN);
+  return sessionStorage.getItem(AUTH_KEYS.TOKEN);
 }
 
 function obtenerUsuarioActual() {
@@ -23,8 +23,8 @@ function obtenerUsuarioActual() {
   if (!token) return null;
   return {
     token,
-    email: localStorage.getItem(AUTH_KEYS.EMAIL) || '',
-    rol: localStorage.getItem(AUTH_KEYS.ROL) || 'USER'
+    email: sessionStorage.getItem(AUTH_KEYS.EMAIL) || '',
+    rol: sessionStorage.getItem(AUTH_KEYS.ROL) || 'USER'
   };
 }
 
@@ -34,9 +34,9 @@ function esAdmin() {
 }
 
 function cerrarSesion() {
-  localStorage.removeItem(AUTH_KEYS.TOKEN);
-  localStorage.removeItem(AUTH_KEYS.EMAIL);
-  localStorage.removeItem(AUTH_KEYS.ROL);
+  sessionStorage.removeItem(AUTH_KEYS.TOKEN);
+  sessionStorage.removeItem(AUTH_KEYS.EMAIL);
+  sessionStorage.removeItem(AUTH_KEYS.ROL);
   window.location.href = 'index.html';
 }
 
@@ -48,7 +48,7 @@ function getAuthHeaders(incluirJson = true) {
   }
   const token = obtenerToken();
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers['Authorization'] = 'Bearer ' + token;
   }
   return headers;
 }

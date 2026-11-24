@@ -384,10 +384,7 @@ function actualizarNavbarSesion() {
     if (navPedidos) navPedidos.classList.add("d-none");
     if (navAdmin) navAdmin.classList.add("d-none");
     if (navAuth) {
-      navAuth.innerHTML =
-        '<a href="login.html" style="background-color: #ffc107; color: #111 !important; padding: 6px 16px; border-radius: 20px; font-weight: 700; text-decoration: none; display: inline-block;">' +
-          '<i class="fa-solid fa-user me-1"></i> Ingresar' +
-        '</a>';
+      navAuth.innerHTML = '<a href="login.html">Ingresar</a>';
     }
     return;
   }
@@ -403,11 +400,7 @@ function actualizarNavbarSesion() {
   }
 
   if (navAuth) {
-    navAuth.innerHTML =
-      '<div style="display: inline-flex; align-items: center; gap: 8px;">' +
-        '<span style="color: #212529; font-size: 0.85rem; font-weight: 700;">' + usuario.email + '</span>' +
-        '<button type="button" onclick="cerrarSesion()" style="background-color: #dc3545; color: #fff; border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">Salir</button>' +
-      '</div>';
+    navAuth.innerHTML = '<a href="#" onclick="cerrarSesion()">Salir (' + usuario.email + ')</a>';
   }
 }
 
