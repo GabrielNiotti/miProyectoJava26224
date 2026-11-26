@@ -16,8 +16,12 @@ import com.techlab.laperfu.model.Usuario;
 import com.techlab.laperfu.repository.UsuarioRepository;
 import com.techlab.laperfu.security.JwtService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Autenticación", description = "Registro e inicio de sesión de usuarios y administradores de La Perfu")
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
@@ -33,6 +37,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Registrar nuevo usuario", description = "Crea una nueva cuenta de cliente (rol USER) en la perfumería")
     public ResponseEntity<?> registrar(@RequestBody AuthRequest request) {
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()
                 || request.getPassword() == null || request.getPassword().isEmpty()) {
@@ -56,6 +61,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Iniciar sesión", description = "Valida credenciales y devuelve el token JWT para autorizar peticiones")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         if (request.getEmail() == null || request.getPassword() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

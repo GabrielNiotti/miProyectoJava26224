@@ -41,11 +41,13 @@ public class SecurityConfig {
                 .requestMatchers("/", "/*.html", "/css/**", "/js/**", "/imagenes/**", "/favicon.ico").permitAll()
                 // 2. Autenticación pública (login y registro)
                 .requestMatchers("/auth/**").permitAll()
-                // 3. Catálogo público (lectura GET de productos y categorías)
+                // 3. Documentación Swagger UI (OpenAPI)
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                // 4. Catálogo público (lectura GET de productos y categorías)
                 .requestMatchers(HttpMethod.GET, "/producto/**", "/categoria/**").permitAll()
-                // 4. Gestión del catálogo (POST, PUT, DELETE) solo para ADMIN
+                // 5. Gestión del catálogo (POST, PUT, DELETE) solo para ADMIN
                 .requestMatchers("/producto/**", "/categoria/**").hasRole("ADMIN")
-                // 5. Pedidos y cualquier otra ruta exigen usuario autenticado (USER o ADMIN)
+                // 6. Pedidos y cualquier otra ruta exigen usuario autenticado (USER o ADMIN)
                 .anyRequest().authenticated())
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
